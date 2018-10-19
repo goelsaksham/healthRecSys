@@ -8,3 +8,8 @@ Code contributed by Meghna Singh, Saksham Goel and Abhiraj Mohan.
   * [Notes and Tasks](https://docs.google.com/document/d/13hcYPA0zETVPHPmwA6ccmDysZYuqVvDUSlhoicqSV2s/edit)
   * [Database Design](https://docs.google.com/document/d/13hcYPA0zETVPHPmwA6ccmDysZYuqVvDUSlhoicqSV2s/edit)
   
+## Important Resources
+  
+  * [DBVis](https://www.dbvis.com/features/tour/the-dbvisualizer-ui/) - Database ER Diagram Generator
+  * [NaviCat](https://www.navicat.com/en/download/navicat-premium?gclid=CjwKCAjwgabeBRBuEiwACD4R5kHeiCmQG4ii9n6ngI6PNS8YKEX26YlxBN2BbWzqgpQfFXoYSADr4xoC5eEQAvD_BwE) - Database ER Diagram Generator. __Not Free__
+  
