@@ -92,3 +92,4 @@ sleepdf.to_csv('/Users/shsu/HealthData/Sleep/sleep' + \
                index=False)
 """
 print(auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2))))
+print(auth2_client.intraday_time_series(resource='steps'))
