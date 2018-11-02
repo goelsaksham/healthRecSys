@@ -70,7 +70,7 @@ class OAuth2Server:
         if cherrypy.engine.state == cherrypy.engine.states.STARTED:
             threading.Timer(1, cherrypy.engine.exit).start()
 
-
+"""
 if __name__ == '__main__':
 
     if not (len(sys.argv) == 3):
@@ -87,3 +87,4 @@ if __name__ == '__main__':
     print('TOKEN\n=====\n')
     for key, value in server.fitbit.client.session.token.items():
         print('{} = {}'.format(key, value))
+"""

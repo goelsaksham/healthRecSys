@@ -18,8 +18,8 @@ from .utils import curry
 
 
 class FitbitOauth2Client(object):
-    API_ENDPOINT = "https://api.fitbit_unofficial.com"
-    AUTHORIZE_ENDPOINT = "https://www.fitbit_unofficial.com"
+    API_ENDPOINT = "https://api.fitbit.com"
+    AUTHORIZE_ENDPOINT = "https://www.fitbit.com"
     API_VERSION = 1
 
     request_token_url = "%s/oauth2/token" % API_ENDPOINT
@@ -35,7 +35,7 @@ class FitbitOauth2Client(object):
         you have them to access user data. Specify just the first 2 parameters
         to start the setup for user authorization (as an example see gather_key_oauth2.py)
             - client_id, client_secret are in the app configuration page
-            https://dev.fitbit_unofficial.com/apps
+            https://dev.fitbit.com/apps
             - access_token, refresh_token are obtained after the user grants permission
         """
 
@@ -83,7 +83,7 @@ class FitbitOauth2Client(object):
         """
         Builds and makes the OAuth2 Request, catches errors
 
-        https://dev.fitbit_unofficial.com/docs/oauth2/#authorization-errors
+        https://dev.fitbit.com/docs/oauth2/#authorization-errors
         """
         data = data or {}
         method = method or ('POST' if data else 'GET')
@@ -107,9 +107,9 @@ class FitbitOauth2Client(object):
         browser.
             - scope: pemissions that that are being requested [default ask all]
             - redirect_uri: url to which the response will posted. required here
-              unless you specify only one Callback URL on the fitbit_unofficial app or
+              unless you specify only one Callback URL on the fitbit app or
               you already passed it to the constructor
-            for more info see https://dev.fitbit_unofficial.com/docs/oauth2/
+            for more info see https://dev.fitbit.com/docs/oauth2/
         """
 
         self.session.scope = scope or [
@@ -132,8 +132,8 @@ class FitbitOauth2Client(object):
 
     def fetch_access_token(self, code, redirect_uri=None):
 
-        """Step 2: Given the code from fitbit_unofficial from step 1, call
-        fitbit_unofficial again and returns an access token object. Extract the needed
+        """Step 2: Given the code from fitbit from step 1, call
+        fitbit again and returns an access token object. Extract the needed
         information from that and save it to use in future API calls.
         the token is internally saved
         """
@@ -164,11 +164,11 @@ class FitbitOauth2Client(object):
 class Fitbit(object):
     """
     Before using this class, create a Fitbit app
-    `here <https://dev.fitbit_unofficial.com/apps/new>`_. There you will get the client id
+    `here <https://dev.fitbit.com/apps/new>`_. There you will get the client id
     and secret needed to instantiate this class. When first authorizing a user,
-    make sure to pass the `redirect_uri` keyword arg so fitbit_unofficial will know where
+    make sure to pass the `redirect_uri` keyword arg so fitbit will know where
     to return to when the authorization is complete. See
-    `gather_keys_oauth2.py <https://github.com/orcasgit/python-fitbit_unofficial/blob/master/gather_keys_oauth2.py>`_
+    `gather_keys_oauth2.py <https://github.com/orcasgit/python-fitbit/blob/master/gather_keys_oauth2.py>`_
     for a reference implementation of the authorization process. You should
     save ``access_token``, ``refresh_token``, and ``expires_at`` from the
     returned token for each user you authorize.
@@ -186,7 +186,7 @@ class Fitbit(object):
     US = 'en_US'
     METRIC = 'en_UK'
 
-    API_ENDPOINT = "https://api.fitbit_unofficial.com"
+    API_ENDPOINT = "https://api.fitbit.com"
     API_VERSION = 1
     WEEK_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     PERIODS = ['1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max']
@@ -278,7 +278,7 @@ class Fitbit(object):
             This is not the same format that the GET comes back in, GET requests
             are wrapped in {'user': <dict of user data>}
 
-        https://dev.fitbit_unofficial.com/docs/user/
+        https://dev.fitbit.com/docs/user/
         """
         url = "{0}/{1}/user/{2}/profile.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
@@ -292,7 +292,7 @@ class Fitbit(object):
             This is not the same format that the GET comes back in, GET requests
             are wrapped in {'user': <dict of user data>}
 
-        https://dev.fitbit_unofficial.com/docs/user/#update-profile
+        https://dev.fitbit.com/docs/user/#update-profile
         """
         url = "{0}/{1}/user/-/profile.json".format(*self._get_common_args())
         return self.make_request(url, data)
@@ -330,7 +330,7 @@ class Fitbit(object):
             heart(date=None, user_id=None, data=None)
             bp(date=None, user_id=None, data=None)
 
-        * https://dev.fitbit_unofficial.com/docs/
+        * https://dev.fitbit.com/docs/
         """
 
         if not date:
@@ -391,8 +391,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        * https://dev.fitbit_unofficial.com/docs/body/#get-body-goals
-        * https://dev.fitbit_unofficial.com/docs/body/#update-body-fat-goal
+        * https://dev.fitbit.com/docs/body/#get-body-goals
+        * https://dev.fitbit.com/docs/body/#update-body-fat-goal
 
         Pass no arguments to get the body fat goal. Pass a ``fat`` argument
         to update the body fat goal.
@@ -406,8 +406,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        * https://dev.fitbit_unofficial.com/docs/body/#get-body-goals
-        * https://dev.fitbit_unofficial.com/docs/body/#update-weight-goal
+        * https://dev.fitbit.com/docs/body/#get-body-goals
+        * https://dev.fitbit.com/docs/body/#update-weight-goal
 
         Pass no arguments to get the body weight goal. Pass ``start_date``,
         ``start_weight`` and optionally ``weight`` to set the weight goal.
@@ -432,8 +432,8 @@ class Fitbit(object):
         """
         Implements the following APIs for period equal to daily
 
-        https://dev.fitbit_unofficial.com/docs/activity/#get-activity-goals
-        https://dev.fitbit_unofficial.com/docs/activity/#update-activity-goals
+        https://dev.fitbit.com/docs/activity/#get-activity-goals
+        https://dev.fitbit.com/docs/activity/#update-activity-goals
 
         Pass no arguments to get the daily activities goal. Pass any one of
         the optional arguments to set that component of the daily activities
@@ -459,8 +459,8 @@ class Fitbit(object):
         """
         Implements the following APIs for period equal to weekly
 
-        https://dev.fitbit_unofficial.com/docs/activity/#get-activity-goals
-        https://dev.fitbit_unofficial.com/docs/activity/#update-activity-goals
+        https://dev.fitbit.com/docs/activity/#get-activity-goals
+        https://dev.fitbit.com/docs/activity/#update-activity-goals
 
         Pass no arguments to get the weekly activities goal. Pass any one of
         the optional arguments to set that component of the weekly activities
@@ -479,8 +479,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        https://dev.fitbit_unofficial.com/docs/food-logging/#get-food-goals
-        https://dev.fitbit_unofficial.com/docs/food-logging/#update-food-goal
+        https://dev.fitbit.com/docs/food-logging/#get-food-goals
+        https://dev.fitbit.com/docs/food-logging/#update-food-goal
 
         Pass no arguments to get the food goal. Pass at least ``calories`` or
         ``intensity`` and optionally ``personalized`` to update the food goal.
@@ -500,8 +500,8 @@ class Fitbit(object):
         """
         Implements the following APIs
 
-        https://dev.fitbit_unofficial.com/docs/food-logging/#get-water-goal
-        https://dev.fitbit_unofficial.com/docs/food-logging/#update-water-goal
+        https://dev.fitbit.com/docs/food-logging/#get-water-goal
+        https://dev.fitbit.com/docs/food-logging/#update-water-goal
 
         Pass no arguments to get the water goal. Pass ``target`` to update it.
 
@@ -521,11 +521,11 @@ class Fitbit(object):
         Taking liberty, this assumes a base_date of today, the current user,
         and a 1d period.
 
-        https://dev.fitbit_unofficial.com/docs/activity/#activity-time-series
-        https://dev.fitbit_unofficial.com/docs/body/#body-time-series
-        https://dev.fitbit_unofficial.com/docs/food-logging/#food-or-water-time-series
-        https://dev.fitbit_unofficial.com/docs/heart-rate/#heart-rate-time-series
-        https://dev.fitbit_unofficial.com/docs/sleep/#sleep-time-series
+        https://dev.fitbit.com/docs/activity/#activity-time-series
+        https://dev.fitbit.com/docs/body/#body-time-series
+        https://dev.fitbit.com/docs/food-logging/#food-or-water-time-series
+        https://dev.fitbit.com/docs/heart-rate/#heart-rate-time-series
+        https://dev.fitbit.com/docs/sleep/#sleep-time-series
         """
         if period and end_date:
             raise TypeError("Either end_date or period can be specified, not both")
@@ -550,10 +550,10 @@ class Fitbit(object):
         """
         The intraday time series extends the functionality of the regular time series, but returning data at a
         more granular level for a single day, defaulting to 1 minute intervals. To access this feature, one must
-        fill out the Private Support form here (see https://dev.fitbit_unofficial.com/docs/help/).
+        fill out the Private Support form here (see https://dev.fitbit.com/docs/help/).
         For details on the resources available and more information on how to get access, see:
 
-        https://dev.fitbit_unofficial.com/docs/activity/#get-activity-intraday-time-series
+        https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
         """
 
         # Check that the time range is valid
@@ -564,14 +564,14 @@ class Fitbit(object):
 
         """
         Per
-        https://dev.fitbit_unofficial.com/docs/activity/#get-activity-intraday-time-series
+        https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
         the detail-level is now (OAuth 2.0 ):
         either "1min" or "15min" (optional). "1sec" for heart rate.
         """
         if not detail_level in ['1sec', '1min', '15min']:
             raise ValueError("Period must be either '1sec', '1min', or '15min'")
 
-        url = "{0}/{1}/user/-/{resource}/date/{base_date}/1d/{detail_level}".format(
+        url = "{0}/{1}/user/-/activities/{resource}/date/{base_date}/1d/{detail_level}".format(
             *self._get_common_args(),
             resource=resource,
             base_date=self._get_date_string(base_date),
@@ -588,14 +588,16 @@ class Fitbit(object):
 
         url = url + '.json'
 
+        print(url)
+
         return self.make_request(url)
 
     def activity_stats(self, user_id=None, qualifier=''):
         """
-        * https://dev.fitbit_unofficial.com/docs/activity/#activity-types
-        * https://dev.fitbit_unofficial.com/docs/activity/#get-favorite-activities
-        * https://dev.fitbit_unofficial.com/docs/activity/#get-recent-activity-types
-        * https://dev.fitbit_unofficial.com/docs/activity/#get-frequent-activities
+        * https://dev.fitbit.com/docs/activity/#activity-types
+        * https://dev.fitbit.com/docs/activity/#get-favorite-activities
+        * https://dev.fitbit.com/docs/activity/#get-recent-activity-types
+        * https://dev.fitbit.com/docs/activity/#get-frequent-activities
 
         This implements the following methods::
 
@@ -626,9 +628,9 @@ class Fitbit(object):
             favorite_foods(user_id=None, qualifier='')
             frequent_foods(user_id=None, qualifier='')
 
-        * https://dev.fitbit_unofficial.com/docs/food-logging/#get-favorite-foods
-        * https://dev.fitbit_unofficial.com/docs/food-logging/#get-frequent-foods
-        * https://dev.fitbit_unofficial.com/docs/food-logging/#get-recent-foods
+        * https://dev.fitbit.com/docs/food-logging/#get-favorite-foods
+        * https://dev.fitbit.com/docs/food-logging/#get-frequent-foods
+        * https://dev.fitbit.com/docs/food-logging/#get-recent-foods
         """
         url = "{0}/{1}/user/{2}/foods/log/{qualifier}.json".format(
             *self._get_common_args(user_id),
@@ -638,7 +640,7 @@ class Fitbit(object):
 
     def add_favorite_activity(self, activity_id):
         """
-        https://dev.fitbit_unofficial.com/docs/activity/#add-favorite-activity
+        https://dev.fitbit.com/docs/activity/#add-favorite-activity
         """
         url = "{0}/{1}/user/-/activities/favorite/{activity_id}.json".format(
             *self._get_common_args(),
@@ -648,14 +650,14 @@ class Fitbit(object):
 
     def log_activity(self, data):
         """
-        https://dev.fitbit_unofficial.com/docs/activity/#log-activity
+        https://dev.fitbit.com/docs/activity/#log-activity
         """
         url = "{0}/{1}/user/-/activities.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
 
     def delete_favorite_activity(self, activity_id):
         """
-        https://dev.fitbit_unofficial.com/docs/activity/#delete-favorite-activity
+        https://dev.fitbit.com/docs/activity/#delete-favorite-activity
         """
         url = "{0}/{1}/user/-/activities/favorite/{activity_id}.json".format(
             *self._get_common_args(),
@@ -665,7 +667,7 @@ class Fitbit(object):
 
     def add_favorite_food(self, food_id):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#add-favorite-food
+        https://dev.fitbit.com/docs/food-logging/#add-favorite-food
         """
         url = "{0}/{1}/user/-/foods/log/favorite/{food_id}.json".format(
             *self._get_common_args(),
@@ -675,7 +677,7 @@ class Fitbit(object):
 
     def delete_favorite_food(self, food_id):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#delete-favorite-food
+        https://dev.fitbit.com/docs/food-logging/#delete-favorite-food
         """
         url = "{0}/{1}/user/-/foods/log/favorite/{food_id}.json".format(
             *self._get_common_args(),
@@ -685,28 +687,28 @@ class Fitbit(object):
 
     def create_food(self, data):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#create-food
+        https://dev.fitbit.com/docs/food-logging/#create-food
         """
         url = "{0}/{1}/user/-/foods.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
 
     def get_meals(self):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#get-meals
+        https://dev.fitbit.com/docs/food-logging/#get-meals
         """
         url = "{0}/{1}/user/-/meals.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_devices(self):
         """
-		https://dev.fitbit_unofficial.com/docs/devices/#get-devices
+		https://dev.fitbit.com/docs/devices/#get-devices
         """
         url = "{0}/{1}/user/-/devices.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_alarms(self, device_id):
         """
-        https://dev.fitbit_unofficial.com/docs/devices/#get-alarms
+        https://dev.fitbit.com/docs/devices/#get-alarms
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms.json".format(
             *self._get_common_args(),
@@ -718,7 +720,7 @@ class Fitbit(object):
                   enabled=True, label=None, snooze_length=None,
                   snooze_count=None, vibe='DEFAULT'):
         """
-        https://dev.fitbit_unofficial.com/docs/devices/#add-alarm
+        https://dev.fitbit.com/docs/devices/#add-alarm
         alarm_time should be a timezone aware datetime object.
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms.json".format(
@@ -751,7 +753,7 @@ class Fitbit(object):
     def update_alarm(self, device_id, alarm_id, alarm_time, week_days, recurring=False, enabled=True, label=None,
                      snooze_length=None, snooze_count=None, vibe='DEFAULT'):
         """
-        https://dev.fitbit_unofficial.com/docs/devices/#update-alarm
+        https://dev.fitbit.com/docs/devices/#update-alarm
         alarm_time should be a timezone aware datetime object.
         """
         # TODO Refactor with create_alarm. Tons of overlap.
@@ -786,7 +788,7 @@ class Fitbit(object):
 
     def delete_alarm(self, device_id, alarm_id):
         """
-        https://dev.fitbit_unofficial.com/docs/devices/#delete-alarm
+        https://dev.fitbit.com/docs/devices/#delete-alarm
         """
         url = "{0}/{1}/user/-/devices/tracker/{device_id}/alarms/{alarm_id}.json".format(
             *self._get_common_args(),
@@ -797,20 +799,20 @@ class Fitbit(object):
 
     def get_sleep(self, date):
         """
-        https://dev.fitbit_unofficial.com/docs/sleep/#get-sleep-logs
+        https://dev.fitbit.com/docs/sleep/#get-sleep-logs
         date should be a datetime.date object.
         """
-        url = "{0}/{1}/user/-/sleep/date/{year}-{month}-{day}.json".format(
-            *self._get_common_args(),
+        url = "https://api.fitbit.com/1.2/user/-/sleep/date/{year}-{month}-{day}.json".format(
             year=date.year,
             month=date.month,
             day=date.day
         )
+        print(url)
         return self.make_request(url)
 
     def log_sleep(self, start_time, duration):
         """
-        https://dev.fitbit_unofficial.com/docs/sleep/#log-sleep
+        https://dev.fitbit.com/docs/sleep/#log-sleep
         start time should be a datetime object. We will be using the year, month, day, hour, and minute.
         """
         data = {
@@ -823,14 +825,14 @@ class Fitbit(object):
 
     def activities_list(self):
         """
-        https://dev.fitbit_unofficial.com/docs/activity/#browse-activity-types
+        https://dev.fitbit.com/docs/activity/#browse-activity-types
         """
         url = "{0}/{1}/activities.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def activity_detail(self, activity_id):
         """
-        https://dev.fitbit_unofficial.com/docs/activity/#get-activity-type
+        https://dev.fitbit.com/docs/activity/#get-activity-type
         """
         url = "{0}/{1}/activities/{activity_id}.json".format(
             *self._get_common_args(),
@@ -840,7 +842,7 @@ class Fitbit(object):
 
     def search_foods(self, query):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#search-foods
+        https://dev.fitbit.com/docs/food-logging/#search-foods
         """
         url = "{0}/{1}/foods/search.json?{encoded_query}".format(
             *self._get_common_args(),
@@ -850,7 +852,7 @@ class Fitbit(object):
 
     def food_detail(self, food_id):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#get-food
+        https://dev.fitbit.com/docs/food-logging/#get-food
         """
         url = "{0}/{1}/foods/{food_id}.json".format(
             *self._get_common_args(),
@@ -860,14 +862,14 @@ class Fitbit(object):
 
     def food_units(self):
         """
-        https://dev.fitbit_unofficial.com/docs/food-logging/#get-food-units
+        https://dev.fitbit.com/docs/food-logging/#get-food-units
         """
         url = "{0}/{1}/foods/units.json".format(*self._get_common_args())
         return self.make_request(url)
 
     def get_bodyweight(self, base_date=None, user_id=None, period=None, end_date=None):
         """
-        https://dev.fitbit_unofficial.com/docs/body/#get-weight-logs
+        https://dev.fitbit.com/docs/body/#get-weight-logs
         base_date should be a datetime.date object (defaults to today),
         period can be '1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max' or None
         end_date should be a datetime.date object, or None.
@@ -878,7 +880,7 @@ class Fitbit(object):
 
     def get_bodyfat(self, base_date=None, user_id=None, period=None, end_date=None):
         """
-        https://dev.fitbit_unofficial.com/docs/body/#get-body-fat-logs
+        https://dev.fitbit.com/docs/body/#get-body-fat-logs
         base_date should be a datetime.date object (defaults to today),
         period can be '1d', '7d', '30d', '1w', '1m', '3m', '6m', '1y', 'max' or None
         end_date should be a datetime.date object, or None.
@@ -915,14 +917,14 @@ class Fitbit(object):
 
     def get_friends(self, user_id=None):
         """
-        https://dev.fitbit_unofficial.com/docs/friends/#get-friends
+        https://dev.fitbit.com/docs/friends/#get-friends
         """
         url = "{0}/{1}/user/{2}/friends.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
 
     def get_friends_leaderboard(self, period):
         """
-        https://dev.fitbit_unofficial.com/docs/friends/#get-friends-leaderboard
+        https://dev.fitbit.com/docs/friends/#get-friends-leaderboard
         """
         if not period in ['7d', '30d']:
             raise ValueError("Period must be one of '7d', '30d'")
@@ -934,7 +936,7 @@ class Fitbit(object):
 
     def invite_friend(self, data):
         """
-        https://dev.fitbit_unofficial.com/docs/friends/#invite-friend
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
         url = "{0}/{1}/user/-/friends/invitations.json".format(*self._get_common_args())
         return self.make_request(url, data=data)
@@ -942,20 +944,20 @@ class Fitbit(object):
     def invite_friend_by_email(self, email):
         """
         Convenience Method for
-        https://dev.fitbit_unofficial.com/docs/friends/#invite-friend
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
         return self.invite_friend({'invitedUserEmail': email})
 
     def invite_friend_by_userid(self, user_id):
         """
         Convenience Method for
-        https://dev.fitbit_unofficial.com/docs/friends/#invite-friend
+        https://dev.fitbit.com/docs/friends/#invite-friend
         """
         return self.invite_friend({'invitedUserId': user_id})
 
     def respond_to_invite(self, other_user_id, accept=True):
         """
-        https://dev.fitbit_unofficial.com/docs/friends/#respond-to-friend-invitation
+        https://dev.fitbit.com/docs/friends/#respond-to-friend-invitation
         """
         url = "{0}/{1}/user/-/friends/invitations/{user_id}.json".format(
             *self._get_common_args(),
@@ -978,7 +980,7 @@ class Fitbit(object):
 
     def get_badges(self, user_id=None):
         """
-        https://dev.fitbit_unofficial.com/docs/friends/#badges
+        https://dev.fitbit.com/docs/friends/#badges
         """
         url = "{0}/{1}/user/{2}/badges.json".format(*self._get_common_args(user_id))
         return self.make_request(url)
@@ -986,7 +988,7 @@ class Fitbit(object):
     def subscription(self, subscription_id, subscriber_id, collection=None,
                      method='POST'):
         """
-        https://dev.fitbit_unofficial.com/docs/subscriptions/
+        https://dev.fitbit.com/docs/subscriptions/
         """
         base_url = "{0}/{1}/user/-{collection}/apiSubscriptions/{end_string}.json"
         kwargs = {'collection': '', 'end_string': subscription_id}
@@ -1003,7 +1005,7 @@ class Fitbit(object):
 
     def list_subscriptions(self, collection=''):
         """
-        https://dev.fitbit_unofficial.com/docs/subscriptions/#getting-a-list-of-subscriptions
+        https://dev.fitbit.com/docs/subscriptions/#getting-a-list-of-subscriptions
         """
         url = "{0}/{1}/user/-{collection}/apiSubscriptions.json".format(
             *self._get_common_args(),

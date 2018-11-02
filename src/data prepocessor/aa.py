@@ -47,8 +47,8 @@ for i in stats2['activities-heart-intraday']['dataset']:
 
 heartdf = pd.DataFrame({'Heart Rate': val_list, 'Time': time_list})
 heartdf.to_csv('/Users/shsu/HealthData/Heart/heart' + \
-               yesterday + '.csv', \
-               columns=['Time', 'Heart Rate'], header=True, \
+               yesterday + '.csv',
+               columns=['Time', 'Heart Rate'], header=True,
                index=False)
 
 fitbit_stats = auth2_client.intraday_time_series('activities/heart', base_date='today', detail_level='1sec')
@@ -91,4 +91,4 @@ sleepdf.to_csv('/Users/shsu/HealthData/Sleep/sleep' + \
                columns=['Time', 'State', 'Interpreted'], header=True, \
                index=False)
 """
-print('Hello World!')
+print(auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2))))

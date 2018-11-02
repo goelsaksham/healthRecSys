@@ -11,7 +11,7 @@ from .api import Fitbit, FitbitOauth2Client
 
 # Meta.
 
-__title__ = 'fitbit_unofficial'
+__title__ = 'fitbit'
 __author__ = 'Issac Kelly and ORCAS'
 __author_email__ = 'bpitcher@orcasinc.com'
 __copyright__ = 'Copyright 2012-2017 ORCAS'
