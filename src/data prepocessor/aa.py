@@ -25,6 +25,8 @@ USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
 server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
 server.browser_authorize()
 
+print(server.fitbit.user_profile_get()['user']['encodedId'])
+
 ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
 REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
 
@@ -91,4 +93,18 @@ sleepdf.to_csv('/Users/shsu/HealthData/Sleep/sleep' + \
                columns=['Time', 'State', 'Interpreted'], header=True, \
                index=False)
 """
-print(auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2))))
+
+#print()
+sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
+sleep_data = sleep_data['']
+
+
+"""heart_Stuff = auth2_client.intraday_time_series(resource='heart', detail_level='1min')
+#print(heart_Stuff)
+hear_rate = []
+for activities in heart_Stuff['activities-heart-intraday']['dataset']:
+    hear_rate.append(activities['value'])
+
+import matplotlib.pyplot as plt
+plt.plot(hear_rate)
+plt.show()"""

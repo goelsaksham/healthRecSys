@@ -281,6 +281,8 @@ class Fitbit(object):
         https://dev.fitbit.com/docs/user/
         """
         url = "{0}/{1}/user/{2}/profile.json".format(*self._get_common_args(user_id))
+        #x = self.make_request(url)
+        #print('\n', '\n', '\n', '\n', '\n', x, '\n', '\n', '\n', '\n', '\n')
         return self.make_request(url)
 
     def user_profile_update(self, data):
