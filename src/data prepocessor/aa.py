@@ -52,3 +52,22 @@ def get_sleep_data():
 
     return processed_sleep_data
 
+
+def get_activity_intraday():
+    calories_data = auth2_client.intraday_time_series(resource='calories')
+    calories_data = calories_data['activities-calories-intraday']['dataset']
+    processed_calories_data = []
+    for calories in calories_data:
+        processed_calories_data.append({
+            'user_id': user_id,
+            'date': sleep['dateTime'].split('T')[0],
+            'time': sleep['dateTime'].split('T')[-1],
+            'sec': sleep['seconds'],
+            'level': level_enum[sleep['level']]
+        })
+
+    return processed_sleep_data"""
+    print(calories_data['activities-calories-intraday']['dataset'])
+
+
+get_activity_intraday()
