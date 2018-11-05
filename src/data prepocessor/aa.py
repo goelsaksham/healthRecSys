@@ -20,18 +20,19 @@ def loadkeys(filename):
 
 USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
 
-    """for obtaining Access-token and Refresh-token"""
+"""for obtaining Access-token and Refresh-token"""
 
-    server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
-    server.browser_authorize()
+server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
+server.browser_authorize()
 
-    print(server.fitbit.user_profile_get()['user']['encodedId'])
+user_id = server.fitbit.user_profile_get()['user']['encodedId']
+print(user_id)
 
-    ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
-    REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
+ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
+REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
 
-    auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=ACCESS_TOKEN,
-                                 refresh_token=REFRESH_TOKEN)
+auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=ACCESS_TOKEN,
+                             refresh_token=REFRESH_TOKEN)
 
 
 def get_sleep_data():
@@ -42,7 +43,7 @@ def get_sleep_data():
 
     for sleep in sleep_data:
         processed_sleep_data.append({
-            'user_id': '6WQRF5',
+            'user_id': user_id,
             'date': sleep['dateTime'].split('T')[0],
             'time': sleep['dateTime'].split('T')[-1],
             'sec': sleep['seconds'],
