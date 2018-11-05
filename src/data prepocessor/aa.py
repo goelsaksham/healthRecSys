@@ -18,8 +18,7 @@ def loadkeys(filename):
         return items
 
 
-def get_sleep_data():
-    USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
+USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
 
     """for obtaining Access-token and Refresh-token"""
 
@@ -34,6 +33,8 @@ def get_sleep_data():
     auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=ACCESS_TOKEN,
                                  refresh_token=REFRESH_TOKEN)
 
+
+def get_sleep_data():
     sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
     sleep_data = sleep_data['sleep'][0]['levels']['data']
     processed_sleep_data = []
@@ -49,3 +50,4 @@ def get_sleep_data():
         })
 
     return processed_sleep_data
+
