@@ -54,9 +54,21 @@ database_connection = psycopg2.connect(host=connection_config["hostname"], user=
                                        dbname=connection_config["database"])
 
 # sample usage
-insert_values = [1234, 1997, "'male'", "'fitbit'", "'CDT'", "'mohan056'", "NULL", "NULL"]
+insert_values = ["'6WQRF5'", 1997, "'male'", "'fitbit'", "'CDT'", "'Saksham Goel'", "NULL", "NULL"]
 print(database_connection)
-run_delete_query(database_connection, "subject", "id", 1234)
+run_delete_query(database_connection, "subject", "id", "'6WQRF5'")
 run_insert_query(database_connection, "subject", insert_values)
 run_select_query(database_connection, "subject")
 database_connection.close()
+
+values = []
+
+# for value in values:
+#     record = [
+#         value["user_id"],
+#         value["date"],
+#         value["time"],
+#         value["sec"],
+#         value["level"]
+#     ]
+#     run_insert_query(database_connection, "sleep_intraday_data", record)
