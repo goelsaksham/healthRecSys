@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
+import aa
 import psycopg2
+import datetime
+import time
 
 
 # routine to run a insert query
@@ -56,19 +59,23 @@ database_connection = psycopg2.connect(host=connection_config["hostname"], user=
 # sample usage
 insert_values = ["'6WQRF5'", 1997, "'male'", "'fitbit'", "'CDT'", "'Saksham Goel'", "NULL", "NULL"]
 print(database_connection)
-run_delete_query(database_connection, "subject", "id", "'6WQRF5'")
-run_insert_query(database_connection, "subject", insert_values)
+# run_delete_query(database_connection, "subject", "id", "'6WQRF5'")
+# run_insert_query(database_connection, "subject", insert_values)
 run_select_query(database_connection, "subject")
+
+values = aa.get_sleep_data()
+print(values)
+
+for value in values:
+    date = value["date"]+" "+value["time"]
+    start_time = "timestamp '"+date+"'"
+    record = [
+        "'"+value["user_id"]+"'",
+        "'" + value["date"] + "'",
+        start_time,
+        value["sec"],
+        value["level"]
+    ]
+    run_insert_query(database_connection, "sleep_intraday_data", record)
+
 database_connection.close()
-
-values = []
-
-# for value in values:
-#     record = [
-#         value["user_id"],
-#         value["date"],
-#         value["time"],
-#         value["sec"],
-#         value["level"]
-#     ]
-#     run_insert_query(database_connection, "sleep_intraday_data", record)
