@@ -18,82 +18,34 @@ def loadkeys(filename):
         return items
 
 
-USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
+def get_sleep_data():
+    USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
 
-"""for obtaining Access-token and Refresh-token"""
+    """for obtaining Access-token and Refresh-token"""
 
-server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
-server.browser_authorize()
+    server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
+    server.browser_authorize()
 
-print(server.fitbit.user_profile_get()['user']['encodedId'])
+    print(server.fitbit.user_profile_get()['user']['encodedId'])
 
-ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
-REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
+    ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
+    REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
 
-"""Authorization"""
-auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=ACCESS_TOKEN,
-                             refresh_token=REFRESH_TOKEN)
+    auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=ACCESS_TOKEN,
+                                 refresh_token=REFRESH_TOKEN)
 
-yesterday = str((datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y%m%d"))
-yesterday2 = str((datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
-today = str(datetime.datetime.now().strftime("%Y%m%d"))
+    sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
+    sleep_data = sleep_data['sleep'][0]['levels']['data']
+    processed_sleep_data = []
+    level_enum = {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3}
 
-"""# get heart rate data / should be yesterday
-fitbit_stats2 = auth2_client.intraday_time_series('activities/heart', base_date=yesterday2, detail_level='1sec')
-stats2 = fitbit_stats2
-time_list = []
-val_list = []
-for i in stats2['activities-heart-intraday']['dataset']:
-    val_list.append(i['value'])
-    time_list.append(i['time'])
+    for sleep in sleep_data:
+        processed_sleep_data.append({
+            'user_id': '6WQRF5',
+            'date': sleep['dateTime'].split('T')[0],
+            'time': sleep['dateTime'].split('T')[-1],
+            'sec': sleep['seconds'],
+            'level': level_enum[sleep['level']]
+        })
 
-heartdf = pd.DataFrame({'Heart Rate': val_list, 'Time': time_list})
-heartdf.to_csv('/Users/shsu/HealthData/Heart/heart' + \
-               yesterday + '.csv',
-               columns=['Time', 'Heart Rate'], header=True,
-               index=False)
-
-fitbit_stats = auth2_client.intraday_time_series('activities/heart', base_date='today', detail_level='1sec')
-stats = fitbit_stats
-
-# get heart summary
-hsummarydf = pd.DataFrame({'Date': stats["activities-heart"][0]['dateTime'],
-                           'HR max': stats["activities-heart"][0]['value']['heartRateZones'][0]['max'],
-                           'HR min': stats["activities-heart"][0]['value']['heartRateZones'][0]['min']}, index=[0])
-hsummarydf.to_csv('/Users/shsu/Desktop/HealthData/heartsummary.csv', header=False, index=False, mode='a')
-
-# get sleep summary
-fitbit_stats2 = auth2_client.sleep(date='today')['sleep'][0]
-ssummarydf = pd.DataFrame({'Date': fitbit_stats2['dateOfSleep'],
-                           'MainSleep': fitbit_stats2['isMainSleep'],
-                           'Efficiency': fitbit_stats2['efficiency'],
-                           'Duration': fitbit_stats2['duration'],
-                           'Minutes Asleep': fitbit_stats2['minutesAsleep'],
-                           'Minutes Awake': fitbit_stats2['minutesAwake'],
-                           'Awakenings': fitbit_stats2['awakeCount'],
-                           'Restless Count': fitbit_stats2['restlessCount'],
-                           'Restless Duration': fitbit_stats2['restlessDuration'],
-                           'Time in Bed': fitbit_stats2['timeInBed']
-                           }, index=[0])
-ssummarydf.to_csv('/Users/shsu/HealthData/sleepsummary.csv', header=False, index=False, mode='a')
-
-# get sleep data / should be today
-fitbit_stats3 = auth2_client.sleep(date='today')
-stime_list = []
-sval_list = []
-
-for i in fitbit_stats3['sleep'][0]['minuteData']:
-    stime_list.append(i['dateTime'])
-    sval_list.append(i['value'])
-sleepdf = pd.DataFrame({'State': sval_list,
-                        'Time': stime_list})
-sleepdf['Interpreted'] = sleepdf['State'].map({'2': 'Awake', '3': 'Very Awake', '1': 'Asleep'})
-sleepdf.to_csv('/Users/shsu/HealthData/Sleep/sleep' + \
-               today + '.csv', \
-               columns=['Time', 'State', 'Interpreted'], header=True, \
-               index=False)
-"""
-
-#print()
-sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
-sleep_data = sleep_data['']
+    return processed_sleep_data
