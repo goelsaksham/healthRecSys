@@ -97,14 +97,3 @@ sleepdf.to_csv('/Users/shsu/HealthData/Sleep/sleep' + \
 #print()
 sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
 sleep_data = sleep_data['']
-
-
-"""heart_Stuff = auth2_client.intraday_time_series(resource='heart', detail_level='1min')
-#print(heart_Stuff)
-hear_rate = []
-for activities in heart_Stuff['activities-heart-intraday']['dataset']:
-    hear_rate.append(activities['value'])
-
-import matplotlib.pyplot as plt
-plt.plot(hear_rate)
-plt.show()"""
