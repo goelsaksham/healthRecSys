@@ -78,4 +78,21 @@ for value in values:
     ]
     run_insert_query(database_connection, "sleep_intraday_data", record)
 
+
+activity_values = aa.get_activity_intraday()
+print(values)
+
+for value in values:
+    date = value["date"]
+    time = value["minute"]
+    record = [
+        "'"+value["user_id"]+"'",
+        "'" + date + "'",
+        "'" + time + "'",
+        value["calories"],
+        value["activity_level"],
+        value['activity_met']
+    ]
+    run_insert_query(database_connection, "<<CHANGE THIS>>", record)
+
 database_connection.close()
