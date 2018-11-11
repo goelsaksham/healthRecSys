@@ -41,7 +41,7 @@ def get_sleep_data():
     processed_sleep_data = []
     level_enum = {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3}
 
-    print(sleep_data)
+    # print(sleep_data)
     for sleep in sleep_data:
         processed_sleep_data.append({
             'user_id': user_id,

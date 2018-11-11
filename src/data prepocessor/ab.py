@@ -23,7 +23,7 @@ def run_insert_query(conn, table, values):
     command = command[:-2] + ") RETURNING "+table+"."+colnames[0]
     cur.execute(command)
     conn.commit()
-    print(cur.fetchall())
+    # print(cur.fetchall())
 
 
 # routine to run a delete query
@@ -42,7 +42,7 @@ def run_select_query(conn, table, column=None):
     else:
         command = "SELECT * FROM " + table
     cur.execute(command)
-    print(cur.fetchall())
+    # print(cur.fetchall())
 
 
 connection_config = {
@@ -58,41 +58,40 @@ database_connection = psycopg2.connect(host=connection_config["hostname"], user=
 
 # sample usage
 insert_values = ["'6WQRF5'", 1997, "'male'", "'fitbit'", "'CDT'", "'Saksham Goel'", "NULL", "NULL"]
-print(database_connection)
-# run_delete_query(database_connection, "subject", "id", "'6WQRF5'")
-# run_insert_query(database_connection, "subject", insert_values)
-run_select_query(database_connection, "subject")
 
-values = aa.get_sleep_data()
-print(values)
-
-for value in values:
-    date = value["date"]+" "+value["time"]
-    start_time = "timestamp '"+date+"'"
-    record = [
-        "'"+value["user_id"]+"'",
-        "'" + value["date"] + "'",
-        start_time,
-        value["sec"],
-        value["level"]
-    ]
-    run_insert_query(database_connection, "sleep_intraday_data", record)
+# inserting sleep_intraday_data data
+# values = aa.get_sleep_data()
+# # print(values)
+#
+# for value in values:
+#     date = value["date"]+" "+value["time"]
+#     start_time = "timestamp '"+date+"'"
+#     record = [
+#         "'"+value["user_id"]+"'",
+#         "'" + value["date"] + "'",
+#         start_time,
+#         value["sec"],
+#         value["level"]
+#     ]
+#     run_insert_query(database_connection, "sleep_intraday_data", record)
 
 
+# inserting activity_intraday_data data
 activity_values = aa.get_activity_intraday()
-print(values)
+# print(activity_values)
 
-for value in values:
+for value in activity_values:
     date = value["date"]
-    time = value["minute"]
+    duration = value["minute"].split(":")[0]
     record = [
         "'"+value["user_id"]+"'",
         "'" + date + "'",
-        "'" + time + "'",
+        duration,
         value["calories"],
         value["activity_level"],
+        "NULL",
         value['activity_met']
     ]
-    run_insert_query(database_connection, "<<CHANGE THIS>>", record)
+    run_insert_query(database_connection, "activity_intraday_data", record)
 
 database_connection.close()
