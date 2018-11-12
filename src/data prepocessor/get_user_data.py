@@ -69,10 +69,29 @@ def get_entire_sleep_summary(sleep_data):
     return entire_sleep_summary
 
 
+def get_sleep_enum():
+    return {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3, 'asleep': 4, 'restless': 5, 'awake': 6}
+
+
+def get_sleep_stages_data(sleep_data, level_enum = get_sleep_enum()):
+    entire_sleep_data = sleep_data['sleep']
+    sleep_stages_data = []
+    for sleep in entire_sleep_data['levels']:
+        print(sleep)
+        for sleep_stage in sleep:
+            sleep_stages_data.append({
+                #'user_id': user_id,
+                'timestamp': sleep_stage['dateTime'].replace('T', ''),
+                'sec': sleep_stage['seconds'],
+                'level': level_enum[sleep_stage['level']]
+            })
+    return sleep_stages_data
+
+
 def main():
     USER_ID, CLIENT_SECRET, server = instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
-    print(get_entire_sleep_summary(get_sleep_data(get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN),
+    print(get_sleep_stages_data(get_sleep_data(get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN),
                                            '2018-11-10')))
 
 
