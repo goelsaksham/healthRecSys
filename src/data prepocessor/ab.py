@@ -148,7 +148,18 @@ def insert_sleep_summary_data(date):
     run_insert_query(database_connection, "sleep_summary", record)
 
 def insert_heart_rate_data(date):
-    
+    USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
+    ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
+    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 
-insert_sleep_summary_data('2018-11-10')
+    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    heart_rate_data = get_user_data.get_entire_sleep_summary(get_user_data.get_sleep_data(auth_client, date),
+                                                             user_id)
+
+
+log_dates = ['2018-10-27', '2018-10-28', '2018-10-29','2018-10-30','2018-11-01','2018-11-02','2018-11-03','2018-11-04',
+             '2018-11-05','2018-11-06','2018-11-07','2018-11-08','2018-11-09']
+
+for date in log_dates:
+    insert_sleep_cycles_data(date)
 database_connection.close()
