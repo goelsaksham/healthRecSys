@@ -35,11 +35,12 @@ def get_sleep_data(auth_client, date_str):
     return auth_client.get_sleep(date=date_str)
 
 
-def get_all_sleeps_summary(sleep_data):
+def get_all_sleeps_summary(sleep_data, user_id):
     entire_sleep_data = sleep_data['sleep']
     full_sleep_summary = []
     for current_sleep_data in entire_sleep_data:
         current_sleep_summary = dict()
+        current_sleep_summary['user_id'] = user_id
         current_sleep_summary['date_of_sleep'] = current_sleep_data['dateOfSleep']
         current_sleep_summary['start_time'] = current_sleep_data['startTime']
         current_sleep_summary['time_in_bed'] = current_sleep_data['timeInBed']
@@ -55,9 +56,10 @@ def get_all_sleeps_summary(sleep_data):
     return full_sleep_summary
 
 
-def get_entire_sleep_summary(sleep_data):
+def get_entire_sleep_summary(sleep_data, user_id):
     entire_summary = sleep_data['summary']
     entire_sleep_summary = {
+        'user_id': user_id,
         'deep_sleep_minutes': entire_summary['stages']['deep'],
         'light_sleep_minutes': entire_summary['stages']['light'],
         'rem_sleep_minutes': entire_summary['stages']['rem'],
@@ -73,14 +75,13 @@ def get_sleep_enum():
     return {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3, 'asleep': 4, 'restless': 5, 'awake': 6}
 
 
-def get_sleep_stages_data(sleep_data, level_enum = get_sleep_enum()):
+def get_sleep_stages_data(sleep_data, user_id, level_enum = get_sleep_enum()):
     entire_sleep_data = sleep_data['sleep']
     sleep_stages_data = []
-    for sleep in entire_sleep_data['levels']:
-        print(sleep)
-        for sleep_stage in sleep:
+    for sleep in entire_sleep_data:
+        for sleep_stage in sleep['levels']['data']:
             sleep_stages_data.append({
-                #'user_id': user_id,
+                'user_id': user_id,
                 'timestamp': sleep_stage['dateTime'].replace('T', ''),
                 'sec': sleep_stage['seconds'],
                 'level': level_enum[sleep_stage['level']]
@@ -91,8 +92,10 @@ def get_sleep_stages_data(sleep_data, level_enum = get_sleep_enum()):
 def main():
     USER_ID, CLIENT_SECRET, server = instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
-    print(get_sleep_stages_data(get_sleep_data(get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN),
-                                           '2018-11-10')))
+    auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+
+    user_id = get_fitbit_user_id(get_user_information(server))
+    print(get_sleep_stages_data(get_sleep_data(auth_client, '2018-11-10'), user_id))
 
 
 if __name__ == '__main__':
@@ -100,26 +103,6 @@ if __name__ == '__main__':
 
 
 """
-def get_sleep_data():
-    sleep_data =
-    print(sleep_data)
-    sleep_data = sleep_data['sleep'][0]['levels']['data']
-    processed_sleep_data = []
-    level_enum = {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3}
-
-#    print(sleep_data)
-    for sleep in sleep_data:
-        processed_sleep_data.append({
-            'user_id': user_id,
-            'date': sleep['dateTime'].split('T')[0],
-            'time': sleep['dateTime'].split('T')[-1],
-            'sec': sleep['seconds'],
-            'level': level_enum[sleep['level']]
-        })
-
-    return processed_sleep_data
-
-get_sleep_data()
 
 def get_activity_intraday():
     calories_data = auth2_client.intraday_time_series(resource='calories')
