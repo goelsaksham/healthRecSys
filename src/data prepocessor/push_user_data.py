@@ -3,8 +3,6 @@
 # import aa
 import psycopg2
 import get_user_data
-import datetime
-import time
 
 
 # routine to run a insert query
@@ -95,7 +93,7 @@ insert_values = ["'6WQRF5'", 1997, "'male'", "'fitbit'", "'CDT'", "'Saksham Goel
 #     ]
 #     run_insert_query(database_connection, "activity_intraday_data", record)
 
-
+# function to insert
 def insert_sleep_cycles_data(date):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
@@ -146,6 +144,53 @@ def insert_sleep_summary_data(date):
         sleep_summary_data["total_time_in_bed"]
     ]
     run_insert_query(database_connection, "sleep_summary", record)
+
+
+def insert_sleep_intraday_data(date):
+    USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
+    ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
+    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+
+    values = get_user_data.get_sleep_data(auth_client, date)
+    # print(values)
+    for value in values:
+        date_time = value["date"]+" "+value["time"]
+        start_time = "timestamp '"+date_time+"'"
+        record = [
+            "'"+value["user_id"]+"'",
+            "'" + value["date"] + "'",
+            start_time,
+            value["sec"],
+            value["level"]
+        ]
+        run_insert_query(database_connection, "sleep_intraday_data", record)
+
+
+def insert_activity_intraday_data(date):
+    USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
+    ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
+    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+
+    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    activity_values = get_user_data.get_calories_intraday(get_user_data.get_calories_data(auth_client, date),
+                                                             user_id)
+
+    print(activity_values)
+
+    for value in activity_values:
+        date = value["date"]
+        duration = value["minute"].split(":")[0]
+        record = [
+            "'"+value["user_id"]+"'",
+            "'" + date + "'",
+            duration,
+            value["calories"],
+            value["activity_level"],
+            "NULL",
+            value['activity_met']
+        ]
+        run_insert_query(database_connection, "activity_intraday_data", record)
+
 
 def insert_heart_rate_data(date):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
