@@ -26,7 +26,7 @@ server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
 server.browser_authorize()
 
 user_id = server.fitbit.user_profile_get()['user']['encodedId']
-print(user_id)
+#print(server.fitbit.user_profile_get())
 
 ACCESS_TOKEN = str(server.fitbit.client.session.token['access_token'])
 REFRESH_TOKEN = str(server.fitbit.client.session.token['refresh_token'])
@@ -37,11 +37,12 @@ auth2_client = fitbit.Fitbit(USER_ID, CLIENT_SECRET, oauth2=True, access_token=A
 
 def get_sleep_data():
     sleep_data = auth2_client.get_sleep(date=(datetime.datetime.now() - datetime.timedelta(days=2)))
+    print(sleep_data)
     sleep_data = sleep_data['sleep'][0]['levels']['data']
     processed_sleep_data = []
     level_enum = {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3}
 
-    print(sleep_data)
+#    print(sleep_data)
     for sleep in sleep_data:
         processed_sleep_data.append({
             'user_id': user_id,
@@ -53,6 +54,7 @@ def get_sleep_data():
 
     return processed_sleep_data
 
+get_sleep_data()
 
 def get_activity_intraday():
     calories_data = auth2_client.intraday_time_series(resource='calories')
@@ -72,4 +74,4 @@ def get_activity_intraday():
     return processed_calories_data
 
 
-print(get_activity_intraday())
+#print(get_activity_intraday())

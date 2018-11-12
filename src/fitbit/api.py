@@ -804,10 +804,13 @@ class Fitbit(object):
         https://dev.fitbit.com/docs/sleep/#get-sleep-logs
         date should be a datetime.date object.
         """
-        url = "https://api.fitbit.com/1.2/user/-/sleep/date/{year}-{month}-{day}.json".format(
+        """url = "https://api.fitbit.com/1.2/user/-/sleep/date/{year}-{month}-{day}.json".format(
             year=date.year,
             month=date.month,
             day=date.day
+        )"""
+        url = "https://api.fitbit.com/1.2/user/-/sleep/date/{uri_date}.json".format(
+            uri_date=date
         )
         print(url)
         return self.make_request(url)
@@ -1014,3 +1017,6 @@ class Fitbit(object):
             collection='/{0}'.format(collection) if collection else ''
         )
         return self.make_request(url)
+
+    #def get_device(self):
+
