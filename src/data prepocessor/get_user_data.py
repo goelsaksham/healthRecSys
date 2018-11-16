@@ -58,11 +58,11 @@ def get_all_sleeps_summary(sleep_data, user_id):
         current_sleep_summary = dict()
         current_sleep_summary['user_id'] = user_id
         current_sleep_summary['date_of_sleep'] = current_sleep_data['dateOfSleep']
-        current_sleep_summary['start_time'] = current_sleep_data['startTime'].replace('T', '')
+        current_sleep_summary['start_time'] = current_sleep_data['startTime'].replace('T', ' ')
         current_sleep_summary['time_in_bed'] = current_sleep_data['timeInBed']
-        current_sleep_summary['duration'] = current_sleep_data['duration']
+        current_sleep_summary['duration'] = current_sleep_data['duration']/(60000)
         current_sleep_summary['efficiency'] = current_sleep_data['efficiency']
-        current_sleep_summary['end_time_stamp'] = current_sleep_data['endTime']
+        current_sleep_summary['end_time_stamp'] = current_sleep_data['endTime'].replace('T', ' ')
         current_sleep_summary['main_sleep'] = int(current_sleep_data['isMainSleep'])
         current_sleep_summary['minutes_after_wakeup'] = current_sleep_data['minutesAfterWakeup']
         current_sleep_summary['minutes_asleep'] = current_sleep_data['minutesAsleep']
@@ -192,9 +192,9 @@ def main():
 
     user_id = get_fitbit_user_id(get_user_information(server))
     #print(get_sleep_data_for_dump(auth_client, user_id, '2018-11-10'))
-    #print(get_sleep_stages_data(get_sleep_data(auth_client, '2018-11-10'), user_id))
+    #print(get_all_sleeps_summary(get_sleep_data(auth_client, '2018-11-15'), user_id))
     #print(get_calories_data(auth_client, '2018-11-10'))
-    #print(get_calories_intraday(get_calories_data(auth_client, '2018-11-10'), user_id))
+    print(get_calories_intraday(get_calories_data(auth_client, '2018-11-10'), user_id))
     #print(get_heart_data(auth_client, '2018-11-10'))
     #print(get_heart_summary(get_heart_data(auth_client, '2018-11-10'), user_id))
     #print(get_heart_intraday(get_heart_data(auth_client, '2018-11-10'), user_id))
