@@ -44,7 +44,7 @@ def get_sleep_data_for_dump(auth_client, user_id, date_str):
     sleep_json = get_sleep_data(auth_client, date_str)
     return {
         'user_id': user_id,
-        'data_type': 'sleep',
+        'data_type': 1,
         'data': sleep_json,
         'pull_time': strftime("%Y-%m-%d %H:%M:%S", gmtime()),
         'date': date_str
@@ -117,7 +117,7 @@ def get_calories_json(auth_client, user_id, date_str):
     calories_json = get_calories_data(auth_client, date_str)
     return {
         'user_id': user_id,
-        'data_type': 'calories',
+        'data_type': 2,
         'data': calories_json,
         'pull_time': strftime("%Y-%m-%d %H:%M:%S", gmtime()),
         'date': date_str
@@ -126,6 +126,7 @@ def get_calories_json(auth_client, user_id, date_str):
 
 def get_calories_summary(calories_data, user_id):
     return {
+        'user_id': user_id,
         'date': calories_data['activities-calories'][0]['dateTime'],
         'value': calories_data['activities-calories'][0]['value']
     }
