@@ -63,7 +63,7 @@ def plot_all_on_one(date):
 
 
 def main():
-    #plot_activity_vs_all('2018-11-28')
+    plot_activity_vs_all('2018-11-28')
     plot_all_on_one('2018-11-28')
 
 

@@ -112,6 +112,22 @@ def get_calories_data(auth_client, date_str):
     return auth_client.intraday_time_series(resource='calories', base_date=date_str)
 
 
+def get_steps_data(auth_client, date_str):
+    return auth_client.intraday_time_series(resource='steps', base_date=date_str)
+
+
+def get_distance_data(auth_client, date_str):
+    return auth_client.intraday_time_series(resource='distance', base_date=date_str)
+
+
+def get_floors_data(auth_client, date_str):
+    return auth_client.intraday_time_series(resource='floors', base_date=date_str)
+
+
+def get_elevation_data(auth_client, date_str):
+    return auth_client.intraday_time_series(resource='elevation', base_date=date_str)
+
+
 def get_calories_json(auth_client, user_id, date_str):
     from time import gmtime, strftime
     calories_json = get_calories_data(auth_client, date_str)
