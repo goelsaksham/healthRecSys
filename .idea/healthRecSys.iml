@@ -8,8 +8,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src/fitbit" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.6.5 (/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="R User Library" level="project" />
+    <orderEntry type="library" name="R Skeletons" level="application" />
   </component>
   <component name="TestRunnerService">
     <option name="projectConfiguration" value="Nosetests" />

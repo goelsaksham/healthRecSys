@@ -4,8 +4,8 @@ import datetime
 from application_secrets.fitbit_application_secrets import *
 
 
-def instantiate_user():
-    USER_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
+def instantiate_user(user_name = 'Saksham'):
+    USER_ID, CLIENT_SECRET = get_fitbit_client_id(user_name), get_fitbit_client_secret(user_name)
     server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
     server.browser_authorize()
     return USER_ID, CLIENT_SECRET, server
