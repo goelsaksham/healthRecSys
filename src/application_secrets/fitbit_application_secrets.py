@@ -17,8 +17,8 @@ all_fitbit_app_secrets = {
         'Client Secret': '81170691ca6e7094c9c64b7e473351f6'
     },
     'Prof': {
-        'Client ID': '22D8XW',
-        'Client Secret': 'fe88c75924d8aa3348e670cd3670ba68'
+        'Client ID': '22DDKS',
+        'Client Secret': 'de3b99541ee111cf4133a450a80f4038'
     }
 }
 
