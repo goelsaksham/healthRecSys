@@ -7,6 +7,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/data prepocessor" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/fitbit" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/data_prepocessor" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (PyInstalled)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
