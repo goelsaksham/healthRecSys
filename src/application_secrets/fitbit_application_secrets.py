@@ -9,8 +9,8 @@ all_fitbit_app_secrets = {
         'Client Secret': 'fe88c75924d8aa3348e670cd3670ba68'
     },
     'Abhiraj' : {
-        'Client ID': '22D8XW',
-        'Client Secret': 'fe88c75924d8aa3348e670cd3670ba68'
+        'Client ID': '22DJV5',
+        'Client Secret': 'ed40ec900fd38110e83767b7a5206008'
     },
     'Meghna': {
         'Client ID': '227ZN2',
@@ -21,8 +21,6 @@ all_fitbit_app_secrets = {
         'Client Secret': 'de3b99541ee111cf4133a450a80f4038'
     }
 }
-
-
 
 def get_user_fitbit_secrets(user_name):
     if user_name in all_fitbit_app_secrets.keys():
