@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/data_prepocessor" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/database" />
+      <excludeFolder url="file://$MODULE_DIR$/src/notebooks" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (PyInstalled)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
