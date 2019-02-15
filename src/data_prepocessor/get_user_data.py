@@ -6,6 +6,7 @@ from application_secrets.fitbit_application_secrets import *
 
 def instantiate_user(user_name = 'Saksham'):
     USER_ID, CLIENT_SECRET = get_fitbit_client_id(user_name), get_fitbit_client_secret(user_name)
+    print(USER_ID, CLIENT_SECRET)
     server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
     server.browser_authorize()
     return USER_ID, CLIENT_SECRET, server
@@ -222,7 +223,6 @@ def main():
         heart_beat.append(minute_heart['value'])
     plt.plot(heart_beat)
     plt.show()
-
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ secrets should not be shared with anyone else
 all_fitbit_app_secrets = {
     'Saksham' : {
         'Client ID': '22D8XW',
-        'Client Secret': 'fe88c75924d8aa3348e670cd3670ba68'
+        'Client Secret': '1d003bcb19a13472472dc2f0f3081190'
     },
     'Abhiraj' : {
         'Client ID': '22DJV5',
