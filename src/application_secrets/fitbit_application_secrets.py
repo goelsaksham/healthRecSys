@@ -4,11 +4,11 @@ secrets should not be shared with anyone else
 """
 
 all_fitbit_app_secrets = {
-    'Saksham' : {
+    'Saksham': {
         'Client ID': '22D8XW',
         'Client Secret': '1d003bcb19a13472472dc2f0f3081190'
     },
-    'Abhiraj' : {
+    'Abhiraj': {
         'Client ID': '22DJV5',
         'Client Secret': 'ed40ec900fd38110e83767b7a5206008'
     },
@@ -21,6 +21,7 @@ all_fitbit_app_secrets = {
         'Client Secret': 'de3b99541ee111cf4133a450a80f4038'
     }
 }
+
 
 def get_user_fitbit_secrets(user_name):
     if user_name in all_fitbit_app_secrets.keys():
