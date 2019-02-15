@@ -4,16 +4,16 @@ to collect the data.
 """
 
 all_users_info = {
-	'6WQRF5': {
-		'user_name': 'Saksham Goel'
+	'Saksham': {
+		'user_id': '6WQRF5',
 		},
-	'6WQRF6': {
-		'user_name': 'Abhiraj Mohan'
+	'Abhiraj': {
+		'user_id': '6WQRF5',
 		},
-	'6WQRF7': {
-		'user_name': 'Meghna Singh'
+	'Meghna': {
+		'user_id': '6WQRF5',
 		},
-	'6WQRF8': {
-		'user_name': 'Jaideep Srivastava'
+	'Prof': {
+		'user_id': '6WQRF5',
 		}
 	}

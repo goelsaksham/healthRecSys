@@ -9,8 +9,20 @@ import os
 from datetime import datetime
 
 
-class CSV_Last_Sync:
+class LastSync:
+	def __init__(self):
+		pass
+
+	def get_user_last_sync_time(self, user_id):
+		pass
+
+	def update_user_last_sync_time(self, user_id, date, date_formatting='%Y-%M-%d'):
+		pass
+
+
+class CSVLastSync(LastSync):
 	def __init__(self, csv_file_path='../../data/sync_times/sync_times.csv', date_formatting='%Y-%M-%d'):
+		super().__init__()
 		if not os.path.isfile(csv_file_path):
 			raise FileNotFoundError(f'Invalid csv file path provided: {csv_file_path}')
 		self.__csv_file_path = csv_file_path
@@ -53,7 +65,7 @@ class CSV_Last_Sync:
 
 
 if __name__ == '__main__':
-	obj = CSV_Last_Sync()
+	obj = CSVLastSync()
 	print(obj.get_user_last_sync_time('6WQRF5'))
 	obj.update_user_last_sync_time('6WQRF5', '2018:09:09', '%Y:%M:%d')
 	obj.update_user_last_sync_time('6WQRF6', '2018:09:09', '%Y:%M:%d')
