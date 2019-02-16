@@ -8,11 +8,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/fitbit" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/data_prepocessor" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/data_preprocessor" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/database" />
       <excludeFolder url="file://$MODULE_DIR$/src/notebooks" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (PyInstalled)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.6.5 (/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
