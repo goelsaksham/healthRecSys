@@ -105,6 +105,8 @@ class DB_Last_Sync(LastSync):
 			update_command = "UPDATE last_sync_date SET last_sync_time = "+date_str+"WHERE subject_id="+user_id
 			cur.execute(update_command)
 		else:
+			update_command = "INSERT INTO last_sync_date (subject_id, last_sync_time) VALUES ("+user_id+", "+date_str+")"
+			cur.execute(update_command)
 
 
 if __name__ == '__main__':
