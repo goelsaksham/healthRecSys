@@ -76,6 +76,7 @@ class DB_Last_Sync(LastSync):
 	def __init__(self, date_formating='%Y-%M-%d'):
 		super().__init__()
 		self.__connection__ = DATABASE_CONNECTION
+		self.__date_formatting = date_formating
 
 	def get_date_formatting(self):
 		return self.__date_formatting
