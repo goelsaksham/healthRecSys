@@ -1,5 +1,5 @@
-from data_prepocessor.get_user_data import *
-#from data_prepocessor.push_user_data import *
+from data_preprocessor.get_user_data import *
+#from data_preprocessor.push_user_data import *
 from last_sync_reader import *
 from client_secrets.user_ids import all_users_info
 from datetime import timedelta

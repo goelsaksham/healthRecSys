@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/fitbit" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/data_prepocessor" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/data_preprocessor" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/database" />
       <excludeFolder url="file://$MODULE_DIR$/src/notebooks" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />

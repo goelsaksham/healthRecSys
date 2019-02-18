@@ -7,6 +7,18 @@ of a class can be used to get the data for a particular user using the User ID.
 import pandas as pd
 import os
 from datetime import datetime
+import psycopg2
+
+CONNECTION_CONFIG = {
+    "hostname": 'localhost',
+    "username": 'postgres',
+    "password": '123',
+    "database": 'postgres'
+}
+
+# connecting to postgres database
+DATABASE_CONNECTION = psycopg2.connect(host=CONNECTION_CONFIG["hostname"], user=CONNECTION_CONFIG["username"], password=CONNECTION_CONFIG["password"],
+                                       dbname=CONNECTION_CONFIG["database"])
 
 
 class LastSync:
@@ -60,8 +72,42 @@ class CSVLastSync(LastSync):
 		sync_time_df.to_csv(self.get_csv_file_path())
 
 
-# TODO: Complete the class for Database reading
-# class DB_Last_Sync:
+class DB_Last_Sync(LastSync):
+	def __init__(self, date_formating='%Y-%M-%d'):
+		super().__init__()
+		self.__connection__ = DATABASE_CONNECTION
+		self.__date_formatting = date_formating
+
+	def get_date_formatting(self):
+		return self.__date_formatting
+
+	def set_date_formatting(self, new_date_formatting):
+		self.__date_formatting = new_date_formatting
+
+	def get_user_last_sync_time(self, user_id):
+		cur = self.__connection__.cursor()
+		users_command = "SELECT subject_id FROM last_sync_date"
+		cur.execute(users_command)
+		users = cur.fetchall()
+		if user_id in users:
+			date_command = "SELECT last_sync_time FROM last_sync_date WHERE subject_id="+user_id
+			cur.execute(date_command)
+			return cur.fetchall()
+		else:
+			return datetime.today().strftime(self.get_date_formatting())
+
+	def update_user_last_sync_time(self, user_id, date, date_formatting="%Y-%M-%d"):
+		cur = self.__connection__.cursor()
+		users_command = "SELECT subject_id FROM last_sync_date"
+		cur.execute(users_command)
+		users = cur.fetchall()
+		date_str = datetime.strptime(date, date_formatting).strftime(self.get_date_formatting())
+		if user_id in users:
+			update_command = "UPDATE last_sync_date SET last_sync_time = "+date_str+"WHERE subject_id="+user_id
+			cur.execute(update_command)
+		else:
+			update_command = "INSERT INTO last_sync_date (subject_id, last_sync_time) VALUES ("+user_id+", "+date_str+")"
+			cur.execute(update_command)
 
 
 if __name__ == '__main__':
