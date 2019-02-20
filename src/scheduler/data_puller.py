@@ -50,9 +50,9 @@ def main():
 
 
 if __name__ == '__main__':
-	# schedule.every(1).minutes.do(main)
+	schedule.every(1).minutes.do(main)
 	# Uncomment this for testing the correction of script
-	schedule.every().day.at("23:30").do(main)
+	# schedule.every().day.at("23:30").do(main)
 
 	while True:
 		schedule.run_pending()
