@@ -1,5 +1,5 @@
 from data_preprocessor.get_user_data import *
-#from data_preprocessor.push_user_data import *
+from data_preprocessor.push_user_data import *
 from last_sync_reader import *
 from client_secrets.user_ids import all_users_info
 from datetime import timedelta
@@ -13,6 +13,7 @@ def collect_user_data(user_name, sync_file_obj, date_format='%Y-%M-%d'):
 	auth_client = get_auth_client(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 	user_id = get_fitbit_user_id(get_user_information(server))
 
+	#TODO: Change functionality
 	date_last_sync_str = sync_file_obj.get_user_last_sync_time(user_id)
 	date_last_sync = datetime.strptime(date_last_sync_str, date_format)
 	todays_date = datetime.today()
@@ -22,6 +23,13 @@ def collect_user_data(user_name, sync_file_obj, date_format='%Y-%M-%d'):
 	# TODO: Need to check if able to get data for that particular date???
 	for i in range(number_of_days_since_sync.days + 1):
 		current_date = date_last_sync + timedelta(days=i)
+		insert_sleep_cycles_data(current_date)
+		insert_activity_intraday_data(current_date)
+		insert_sleep_raw_data(current_date)
+		insert_heart_rate_intraday_data(current_date)
+		insert_activity_summary_data(current_date)
+		insert_sleep_intraday_data(current_date)
+		insert_sleep_summary_data(current_date)
 	# TODO: Do stuff with the current date for the current user
 	# TODO: Add if condition to write date upto which the data is present and not the current date
 	sync_file_obj.update_user_last_sync_time(user_id, todays_date_str, date_format)
@@ -32,7 +40,7 @@ def collect_all_users_data(user_info, sync_file_obj):
 	for user_name in user_info:
 		print('Hello World')
 		# Uncomment this for testing the correction of script
-		# collect_user_data(user_name, sync_file_obj)
+		collect_user_data(user_name, sync_file_obj)
 
 
 def main():
