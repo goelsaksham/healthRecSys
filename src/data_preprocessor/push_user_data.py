@@ -89,18 +89,17 @@ insert_values = ["'6WQRF5'", 1997, "'male'", "'fitbit'", "'CDT'", "'Saksham Goel
 #     ]
 #     run_insert_query(database_connection, "activity_intraday_data", record)
 
-# function to insert
-def insert_sleep_cycles_data(date):
+def insert_sleep_cycles_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     sleep_cycles_data = get_user_data.get_all_sleeps_summary(get_user_data.get_sleep_data(auth_client, date),
                                                           user_id)
     print(sleep_cycles_data[0])
     for data in sleep_cycles_data:
-        start_time = data["start_time"].split("T")
+        start_time = data["start_time"].split(" ")
         starttime = "timestamp '"+start_time[0]+" "+start_time[1]+"'"
         if data["main_sleep"]:
             is_main_sleep = 1
@@ -123,12 +122,12 @@ def insert_sleep_cycles_data(date):
         run_insert_query(database_connection, "sleep_cycles", record)
 
 
-def insert_sleep_summary_data(date):
+def insert_sleep_summary_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     sleep_summary_data = get_user_data.get_entire_sleep_summary(get_user_data.get_sleep_data(auth_client, date),
                                                               user_id)
     print(sleep_summary_data)
@@ -142,32 +141,29 @@ def insert_sleep_summary_data(date):
     run_insert_query(database_connection, "sleep_summary", record)
 
 
-def insert_sleep_intraday_data(date):
+def insert_sleep_intraday_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 
-    values = get_user_data.get_sleep_data(auth_client, date)
+    values = get_user_data.get_sleep_stages_data(get_user_data.get_sleep_data(auth_client, date), user_id)
     # print(values)
     for value in values:
-        date_time = value["date"]+" "+value["time"]
-        start_time = "timestamp '"+date_time+"'"
         record = [
-            "'"+value["user_id"]+"'",
-            "'" + value["date"] + "'",
-            start_time,
+            f"'{user_id}'",
+            f"timestamp '{value['timestamp']}'",
             value["sec"],
             value["level"]
         ]
         run_insert_query(database_connection, "sleep_intraday_data", record)
 
 
-def insert_activity_intraday_data(date):
+def insert_activity_intraday_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     activity_values = get_user_data.get_calories_intraday(get_user_data.get_calories_data(auth_client, date),
                                                              user_id)
 
@@ -177,21 +173,21 @@ def insert_activity_intraday_data(date):
         date_time = "timestamp '"+value["timestamp"]+"'"
         record = [
             "'"+value["user_id"]+"'",
+            date_time,
             value["value"],
             value["level"],
             "NULL",
-            value['mets'],
-            date_time
+            value['mets']
         ]
         run_insert_query(database_connection, "activity_intraday_data", record)
 
 
-def insert_activity_summary_data(date):
+def insert_activity_summary_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     activity_values = get_user_data.get_calories_summary(get_user_data.get_calories_data(auth_client, date),
                                                           user_id)
     record = [
@@ -204,12 +200,12 @@ def insert_activity_summary_data(date):
     run_insert_query(database_connection, "activity_type_summary", record)
 
 
-def insert_heart_rate_intraday_data(date):
+def insert_heart_rate_intraday_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     heart_rate_data = get_user_data.get_heart_intraday(get_user_data.get_heart_data(auth_client, date),
                                                        user_id)
     for data in heart_rate_data:
@@ -221,28 +217,19 @@ def insert_heart_rate_intraday_data(date):
         run_insert_query(database_connection, "heart_rate_intraday_data", record)
 
 
-def insert_sleep_raw_data(date):
+def insert_sleep_raw_data(date, auth_client, user_id):
     USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
     ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
-    auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-
-    user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
-    raw_sleep_data = get_user_data.get_calories_json(auth_client, user_id, date)
+    # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    #
+    # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    raw_sleep_data = get_user_data.get_sleep_data_for_dump(auth_client, user_id, date)
     record = [
         "'"+raw_sleep_data["user_id"]+"'",
-        raw_sleep_data["data_type"],
         "'"+(str(raw_sleep_data["data"])).replace(r"'", r'"').replace("True", '"true"')+"'",
         "timestamp '"+raw_sleep_data["pull_time"]+"'",
-        "'"+raw_sleep_data["date"]+"'"
+        "'"+raw_sleep_data["date"]+"'",
+        "'" + raw_sleep_data["data_type"] + "'"
     ]
     run_insert_query(database_connection, "raw_device_data", record)
 
-
-log_dates = ['2018-11-10', '2018-11-11','2018-11-12','2018-11-13','2018-11-14','2018-11-15','2018-11-16',
-             '2018-11-17','2018-11-18','2018-11-19','2018-11-20','2018-11-21']
-
-# insert_heart_rate_intraday_data(log_dates[-1])
-for date in log_dates:
-    # insert_sleep_raw_data(date)
-    insert_activity_intraday_data(date)
-database_connection.close()

@@ -99,7 +99,7 @@ def get_sleep_stages_data(sleep_data, user_id, level_enum = get_sleep_enum()):
         for sleep_stage in sleep['levels']['data']:
             sleep_stages_data.append({
                 'user_id': user_id,
-                'timestamp': sleep_stage['dateTime'].replace('T', ''),
+                'timestamp': sleep_stage['dateTime'].replace('T', ' '),
                 'sec': sleep_stage['seconds'],
                 'level': level_enum[sleep_stage['level']]
             })
@@ -143,6 +143,7 @@ def get_calories_json(auth_client, user_id, date_str):
 
 def get_calories_summary(calories_data, user_id):
     return {
+        'user_id': user_id,
         'date': calories_data['activities-calories'][0]['dateTime'],
         'value': calories_data['activities-calories'][0]['value']
     }

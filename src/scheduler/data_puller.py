@@ -7,7 +7,7 @@ import schedule
 import time
 
 
-def collect_user_data(user_name, sync_file_obj, date_format='%Y-%M-%d'):
+def collect_user_data(user_name, sync_file_obj, date_format='%Y-%m-%d'):
 	CLIENT_ID, CLIENT_SECRET, server = instantiate_user(user_name)
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
@@ -23,13 +23,15 @@ def collect_user_data(user_name, sync_file_obj, date_format='%Y-%M-%d'):
 	# TODO: Need to check if able to get data for that particular date???
 	for i in range(number_of_days_since_sync.days + 1):
 		current_date = date_last_sync + timedelta(days=i)
-		insert_sleep_cycles_data(current_date)
-		insert_activity_intraday_data(current_date)
-		insert_sleep_raw_data(current_date)
-		insert_heart_rate_intraday_data(current_date)
-		insert_activity_summary_data(current_date)
-		insert_sleep_intraday_data(current_date)
-		insert_sleep_summary_data(current_date)
+		print(current_date)
+		current_date_str = current_date.strftime(date_format)
+		# insert_sleep_cycles_data(current_date_str, auth_client, user_id)
+		insert_activity_intraday_data(current_date_str, auth_client, user_id)
+		insert_sleep_raw_data(current_date_str, auth_client, user_id)
+		insert_heart_rate_intraday_data(current_date_str, auth_client, user_id)
+		insert_activity_summary_data(current_date_str, auth_client, user_id)
+		insert_sleep_intraday_data(current_date_str, auth_client, user_id)
+		insert_sleep_summary_data(current_date_str, auth_client, user_id)
 	# TODO: Do stuff with the current date for the current user
 	# TODO: Add if condition to write date upto which the data is present and not the current date
 	sync_file_obj.update_user_last_sync_time(user_id, todays_date_str, date_format)
@@ -50,7 +52,7 @@ def main():
 
 
 if __name__ == '__main__':
-	schedule.every(1).minutes.do(main)
+	schedule.every(1).second.do(main)
 	# Uncomment this for testing the correction of script
 	# schedule.every().day.at("23:30").do(main)
 

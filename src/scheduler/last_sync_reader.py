@@ -28,12 +28,12 @@ class LastSync:
 	def get_user_last_sync_time(self, user_id):
 		pass
 
-	def update_user_last_sync_time(self, user_id, date, date_formatting='%Y-%M-%d'):
+	def update_user_last_sync_time(self, user_id, date, date_formatting='%Y-%m-%d'):
 		pass
 
 
 class CSVLastSync(LastSync):
-	def __init__(self, csv_file_path='../../data/sync_times/sync_times.csv', date_formatting='%Y-%M-%d'):
+	def __init__(self, csv_file_path='../../data/sync_times/sync_times.csv', date_formatting='%Y-%m-%d'):
 		super().__init__()
 		if not os.path.isfile(csv_file_path):
 			raise FileNotFoundError(f'Invalid csv file path provided: {csv_file_path}')
@@ -62,7 +62,7 @@ class CSVLastSync(LastSync):
 		else:
 			return None
 
-	def update_user_last_sync_time(self, user_id, date, date_formatting='%Y-%M-%d'):
+	def update_user_last_sync_time(self, user_id, date, date_formatting='%Y-%m-%d'):
 		sync_time_df = pd.read_csv(self.get_csv_file_path(), index_col='user_id')
 		date_str = datetime.strptime(date, date_formatting).strftime(self.get_date_formatting())
 		if user_id in sync_time_df.index:
@@ -73,7 +73,7 @@ class CSVLastSync(LastSync):
 
 
 class DB_Last_Sync(LastSync):
-	def __init__(self, date_formating='%Y-%M-%d'):
+	def __init__(self, date_formating='%Y-%m-%d'):
 		super().__init__()
 		self.__connection__ = DATABASE_CONNECTION
 		self.__date_formatting = date_formating
@@ -96,7 +96,7 @@ class DB_Last_Sync(LastSync):
 		else:
 			return datetime.today().strftime(self.get_date_formatting())
 
-	def update_user_last_sync_time(self, user_id, date, date_formatting="%Y-%M-%d"):
+	def update_user_last_sync_time(self, user_id, date, date_formatting="%Y-%m-%d"):
 		cur = self.__connection__.cursor()
 		users_command = "SELECT subject_id FROM last_sync_date"
 		cur.execute(users_command)
@@ -113,7 +113,7 @@ class DB_Last_Sync(LastSync):
 if __name__ == '__main__':
 	obj = CSVLastSync()
 	print(obj.get_user_last_sync_time('6WQRF5'))
-	obj.update_user_last_sync_time('6WQRF5', '2018:09:09', '%Y:%M:%d')
-	obj.update_user_last_sync_time('6WQRF6', '2018:09:09', '%Y:%M:%d')
-	obj.update_user_last_sync_time('6WQRF7', '2018:09:09', '%Y:%M:%d')
-	obj.update_user_last_sync_time('6WQRF8', '2018:09:09', '%Y:%M:%d')
+	obj.update_user_last_sync_time('6WQRF5', '2018:09:09', '%Y:%m:%d')
+	obj.update_user_last_sync_time('6WQRF6', '2018:09:09', '%Y:%m:%d')
+	obj.update_user_last_sync_time('6WQRF7', '2018:09:09', '%Y:%m:%d')
+	obj.update_user_last_sync_time('6WQRF8', '2018:09:09', '%Y:%m:%d')
