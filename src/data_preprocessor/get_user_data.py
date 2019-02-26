@@ -75,6 +75,7 @@ def get_all_sleeps_summary(sleep_data, user_id):
 
 def get_entire_sleep_summary(sleep_data, user_id):
     entire_summary = sleep_data['summary']
+    print(sleep_data)
     entire_sleep_summary = {
         'user_id': user_id,
         'deep_sleep_minutes': entire_summary['stages']['deep'],
