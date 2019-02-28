@@ -40,7 +40,6 @@ def main():
 	steps_vals = steps_vals - np.mean(steps_vals)
 	steps_vals = steps_vals / np.std(steps_vals)
 
-
 	all_vals = np.array(list(zip(heart_beat_vals, calories_vals, steps_vals))).reshape(-1, 3)
 	print(all_vals.shape)
 	heart_beat_vals = np.array(heart_beat_vals)
@@ -48,35 +47,38 @@ def main():
 	activity_vals = np.array(activity_vals)
 	steps_vals = np.array(steps_vals)
 
-	algo = rpt.Pelt(model="l2", min_size=10).fit(heart_beat_vals)
+	model = 'l2'
+	min_size_val = 20
+
+	algo = rpt.Pelt(model=model, min_size=min_size_val).fit(heart_beat_vals)
 	result = algo.predict(pen=10)
 	rpt.display(heart_beat_vals, result)
 	plt.gcf().axes[0].set_title('Heart Beat')
 	plt.savefig('../data/plots/changepoint/heart.png')
 	# plt.show()
 
-	algo = rpt.Pelt(model="l2", min_size=10).fit(calories_vals)
+	algo = rpt.Pelt(model=model, min_size=min_size_val).fit(calories_vals)
 	result = algo.predict(pen=10)
 	rpt.display(calories_vals, result)
 	plt.gcf().axes[0].set_title('Calories')
 	plt.savefig('../data/plots/changepoint/calories.png')
 	# plt.show()
 
-	algo = rpt.Pelt(model="l2", min_size=10).fit(steps_vals)
+	algo = rpt.Pelt(model=model, min_size=min_size_val).fit(steps_vals)
 	result = algo.predict(pen=10)
 	rpt.display(steps_vals, result)
 	plt.gcf().axes[0].set_title('Steps')
 	plt.savefig('../data/plots/changepoint/steps.png')
 	# plt.show()
 
-	algo = rpt.Pelt(model="l2", min_size=10).fit(activity_vals)
+	algo = rpt.Pelt(model=model, min_size=min_size_val).fit(activity_vals)
 	result = algo.predict(pen=10)
 	rpt.display(activity_vals, result)
 	plt.gcf().axes[0].set_title('Activity')
 	plt.savefig('../data/plots/changepoint/activity.png')
 	# plt.show()
 
-	algo = rpt.Pelt(model="l2", min_size=10).fit(all_vals)
+	algo = rpt.Pelt(model=model, min_size=min_size_val).fit(all_vals)
 	result = algo.predict(pen=10)
 	rpt.display(all_vals, result)
 	plt.gcf().axes[0].set_title('Heart Rate')
