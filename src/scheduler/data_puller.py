@@ -25,13 +25,16 @@ def collect_user_data(user_name, sync_file_obj, date_format='%Y-%m-%d'):
 		current_date = date_last_sync + timedelta(days=i)
 		print(current_date)
 		current_date_str = current_date.strftime(date_format)
-		# insert_sleep_cycles_data(current_date_str, auth_client, user_id)
-		insert_activity_intraday_data(current_date_str, auth_client, user_id)
-		insert_sleep_raw_data(current_date_str, auth_client, user_id)
-		insert_heart_rate_intraday_data(current_date_str, auth_client, user_id)
-		insert_activity_summary_data(current_date_str, auth_client, user_id)
-		insert_sleep_intraday_data(current_date_str, auth_client, user_id)
-		insert_sleep_summary_data(current_date_str, auth_client, user_id)
+		try:
+			# insert_sleep_cycles_data(current_date_str, auth_client, user_id)
+			# insert_activity_intraday_data(current_date_str, auth_client, user_id)
+			insert_sleep_raw_data(current_date_str, auth_client, user_id)
+			# insert_heart_rate_intraday_data(current_date_str, auth_client, user_id)
+			insert_activity_summary_data(current_date_str, auth_client, user_id)
+			insert_sleep_intraday_data(current_date_str, auth_client, user_id)
+			insert_sleep_summary_data(current_date_str, auth_client, user_id)
+		except:
+			pass
 	# TODO: Do stuff with the current date for the current user
 	# TODO: Add if condition to write date upto which the data is present and not the current date
 	sync_file_obj.update_user_last_sync_time(user_id, todays_date_str, date_format)
