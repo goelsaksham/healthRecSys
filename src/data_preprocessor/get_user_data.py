@@ -216,14 +216,15 @@ def main():
     #print(get_heart_data(auth_client, '2018-11-10'))
     #print(get_heart_summary(get_heart_data(auth_client, '2018-11-10'), user_id))
     #print(get_heart_intraday(get_heart_data(auth_client, '2018-11-10'), user_id))
-    heart_data = get_heart_intraday(get_heart_data(auth_client, '2018-11-05'), user_id)
-    print(heart_data)
-    import matplotlib.pyplot as plt
-    heart_beat = []
-    for minute_heart in heart_data:
-        heart_beat.append(minute_heart['value'])
-    plt.plot(heart_beat)
-    plt.show()
+    print(get_heart_data(auth_client, '2018-11-05'))
+    #heart_data = get_heart_intraday(get_heart_data(auth_client, '2018-11-05'), user_id)
+    #print(heart_data)
+    #import matplotlib.pyplot as plt
+    #heart_beat = []
+    #for minute_heart in heart_data:
+    #    heart_beat.append(minute_heart['value'])
+    #plt.plot(heart_beat)
+    #plt.show()
 
 
 if __name__ == '__main__':
