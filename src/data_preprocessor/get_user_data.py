@@ -165,6 +165,19 @@ def get_calories_intraday(calories_data, user_id):
     return return_calories_intraday_data
 
 
+def get_steps_intraday(steps_data, user_id):
+    date = steps_data['activities-steps'][0]['dateTime']
+    intraday_steps_data = steps_data['activities-steps-intraday']['dataset']
+    return_steps_intraday_data = []
+    for minute_data in intraday_steps_data:
+        return_steps_intraday_data.append({
+            'user_id': user_id,
+            'timestamp': f'{date} {minute_data["time"]}',
+            'value': minute_data['value']
+        })
+    return return_steps_intraday_data
+
+
 ###################################################################################
 #                               HEART DATA
 ###################################################################################
@@ -216,8 +229,8 @@ def main():
     #print(get_calories_intraday(get_calories_data(auth_client, '2018-11-10'), user_id))
     #print(get_heart_data(auth_client, '2018-11-10'))
     #print(get_heart_summary(get_heart_data(auth_client, '2018-11-10'), user_id))
-    #print(get_heart_intraday(get_heart_data(auth_client, '2018-11-10'), user_id))
-    print(get_heart_data(auth_client, '2018-11-05'))
+    print(get_heart_intraday(get_heart_data(auth_client, '2019-02-27'), user_id))
+    #print(get_heart_data(auth_client, '2018-02-27'))
     #heart_data = get_heart_intraday(get_heart_data(auth_client, '2018-11-05'), user_id)
     #print(heart_data)
     #import matplotlib.pyplot as plt
