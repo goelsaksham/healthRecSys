@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/data_preprocessor" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/client_secrets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/utils" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/database" />
       <excludeFolder url="file://$MODULE_DIR$/src/notebooks" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />

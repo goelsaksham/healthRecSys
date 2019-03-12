@@ -219,7 +219,7 @@ def get_heart_intraday(heart_data, user_id):
 
 
 def main():
-    USER_ID, CLIENT_SECRET, server = instantiate_user('Saksham')
+    USER_ID, CLIENT_SECRET, server = instantiate_user('Meghna')
     ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
     auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 

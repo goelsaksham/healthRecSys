@@ -109,3 +109,7 @@ venv.bak/
 *.xml
 .idea/
 *.iml
+
+# Data folder Stuff
+*.pickle
+
