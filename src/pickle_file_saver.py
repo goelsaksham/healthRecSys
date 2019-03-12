@@ -70,7 +70,7 @@ def main():
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 	user_id = get_fitbit_user_id(get_user_information(server))
 	date_iterator(user_id, auth_client, f'../data/data_files/Saksham',
-	              datetime.today() - timedelta(days=135), datetime.today())
+	              datetime.today() - timedelta(days=124), datetime.today())
 
 
 if __name__ == '__main__':
