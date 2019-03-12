@@ -104,12 +104,12 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-
-# Pycharm files
-*.xml
+# Pycharm
 .idea/
+*.xml
 *.iml
+.xml
+.iml
 
 # Data folder Stuff
 *.pickle
-
