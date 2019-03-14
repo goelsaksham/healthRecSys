@@ -72,5 +72,22 @@ def get_attribute_val_array_by_minute(data_dictionary_list: list, attribute):
 	return ret_arr
 
 
-def get_all_dates_numpy_array_hourly_mean(all_dates_numpy_array):
-	temp_array = all_dates_numpy_array.reshape(60, 24, -1)
+def get_all_dates_numpy_array_minute_mean(all_dates_numpy_array):
+	"""
+	Find the mean of the values for each minute in a day as a 24 by 60 shape array.
+	:param all_dates_numpy_array:
+	:return:
+	"""
+	return np.nanmean(all_dates_numpy_array.reshape(-1, 24, 60), axis=0)
+
+
+def get_all_dates_numpy_array_hour_mean(all_dates_numpy_array):
+	return np.nanmean(get_all_dates_numpy_array_minute_mean(all_dates_numpy_array), axis=1)
+
+
+def remove_nans_from_array(all_dates_numpy_array):
+	temp = all_dates_numpy_array.reshape(-1, 24, 60)
+	minute_means = get_all_dates_numpy_array_minute_mean(all_dates_numpy_array)
+	for day_data in temp:
+		day_data[np.isnan(day_data)] = minute_means[np.isnan(day_data)]
+	return temp.reshape(-1, 1440)
