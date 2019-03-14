@@ -84,7 +84,6 @@ def save_user_data_in_pickle_files(user_name, data_dump_directory_path):
 
 
 def main():
-	#time.sleep(3600)
 	save_user_data_in_pickle_files('', '')
 
 if __name__ == '__main__':
