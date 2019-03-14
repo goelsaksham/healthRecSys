@@ -1,5 +1,5 @@
 """
-This script is used to extract the numpy array from the
+This script is used to extract the data about the values from the numpy array from the
 """
 
 from utils.directory_utils import *

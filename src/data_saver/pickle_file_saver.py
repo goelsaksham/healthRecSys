@@ -21,7 +21,7 @@ def save_user_sleep_data(user_id, auth_client, date_str, attr_directory_path):
 	sleep_data = get_sleep_data(auth_client, date_str)
 	if sleep_data:
 		with open(file_path, 'wb') as file_writer:
-			pickle.dump(get_all_sleeps_summary(sleep_data, user_id), file_writer)
+			pickle.dump(get_sleep_stages_data(sleep_data, user_id), file_writer)
 
 
 def save_user_calories_data(user_id, auth_client, date_str, attr_directory_path):
@@ -60,6 +60,7 @@ def save_user_steps_data(user_id, auth_client, date_str, attr_directory_path):
 def date_iterator(user_id, auth_client, user_directory, start_date, end_date, date_format='%Y-%m-%d'):
 	if not check_output_directory(user_directory):
 		return
+	current_date = None
 	for num_days in range((end_date - start_date).days + 1):
 		current_date = start_date + timedelta(days=num_days)
 		current_date_str = current_date.strftime(date_format)
@@ -69,22 +70,37 @@ def date_iterator(user_id, auth_client, user_directory, start_date, end_date, da
 		save_user_heart_data(user_id, auth_client, current_date_str, heart_directory)
 		save_user_sleep_data(user_id, auth_client, current_date_str, sleep_directory)
 		save_user_steps_data(user_id, auth_client, current_date_str, steps_directory)
-		if num_days % 10 == 0:
-			print("Going to sleep for 100 seconds")
+		if num_days != 0 and num_days % 30 == 0:
+			print("Going to sleep for 100 seconds to avoid delays")
 			time.sleep(100)
+	return current_date
 
 
-def save_user_data_in_pickle_files(user_name, data_dump_directory_path):
-	USER_ID, CLIENT_SECRET, server = instantiate_user()
+def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path=f'../data/data_files/Saksham'):
+	USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 	user_id = get_fitbit_user_id(get_user_information(server))
-	date_iterator(user_id, auth_client, f'../../data/data_files/Saksham',
-	              datetime.today() - timedelta(days=41), datetime.today())
+	break_loop = False
+	while not break_loop:
+		# Adding this loop along with the try except block to
+		try:
+			last_date = date_iterator(user_id, auth_client, data_dump_directory_path,
+			              datetime.today() - timedelta(days=140), datetime.today())
+			break_loop = (last_date - datetime.today()).days >= -1
+		except:
+			# sleeping
+			print('Sleeping so that no too many requests!')
+			time.sleep(1800)
+			USER_ID, CLIENT_SECRET, server = instantiate_user()
+			ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
+			auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+			user_id = get_fitbit_user_id(get_user_information(server))
 
 
 def main():
 	save_user_data_in_pickle_files('', '')
+
 
 if __name__ == '__main__':
 	main()
