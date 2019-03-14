@@ -112,4 +112,4 @@ venv.bak/
 .iml
 
 # Data folder Stuff
-*.pickle
+#*.pickle

@@ -70,3 +70,7 @@ def get_attribute_val_array_by_minute(data_dictionary_list: list, attribute):
 		if current_date in time_val_map:
 			ret_arr[minute_delta] = time_val_map[current_date]
 	return ret_arr
+
+
+def get_all_dates_numpy_array_hourly_mean(all_dates_numpy_array):
+	temp_array = all_dates_numpy_array.reshape(60, 24, -1)

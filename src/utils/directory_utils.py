@@ -14,6 +14,17 @@ def construct_path(directory_path, directory_content):
     return os.path.join(directory_path, directory_content)
 
 
+def check_output_directory(directory_path):
+    if exist_directory(directory_path):
+        return True
+    else:
+        try:
+            os.makedirs(directory_path)
+            return True
+        except FileExistsError:
+            return True
+
+
 def get_directory_contents(directory_path, pattern='*'):
     if exist_directory(directory_path):
         cwd = os.getcwd()
