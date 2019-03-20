@@ -76,7 +76,6 @@ def get_all_sleeps_summary(sleep_data, user_id):
 
 def get_entire_sleep_summary(sleep_data, user_id):
     entire_summary = sleep_data['summary']
-    print(sleep_data)
     entire_sleep_summary = {
         'user_id': user_id,
         'deep_sleep_minutes': entire_summary['stages']['deep'],
@@ -90,8 +89,23 @@ def get_entire_sleep_summary(sleep_data, user_id):
     return entire_sleep_summary
 
 
+def get_sleep_stages_summary(sleep_data):
+    sleep_summary = sleep_data['summary']
+    sleep_stages_summary = {
+        'deep': sleep_summary['stages']['deep'],
+        'light': sleep_summary['stages']['light'],
+        'rem': sleep_summary['stages']['rem'],
+        'wake': sleep_summary['stages']['wake'],
+    }
+    return sleep_stages_summary
+
+
 def get_sleep_enum():
     return {'wake': 0, 'light': 1, 'rem': 2, 'deep': 3, 'asleep': 4, 'restless': 5, 'awake': 6}
+
+
+def get_reverse_sleep_enum():
+    return {0: 'wake', 1: 'light', 2: 'rem', 3: 'deep', 4: 'asleep', 5: 'restless', 6: 'awake'}
 
 
 def get_sleep_stages_data(sleep_data, user_id, level_enum = get_sleep_enum()):
