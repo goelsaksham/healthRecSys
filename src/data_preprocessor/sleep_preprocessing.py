@@ -1,5 +1,5 @@
 """
-This file contains several utility functions to help preprocess sleep data
+This file contains several utility functions to help preprocess sleep_stages_ts data
 """
 from data_preprocessor.get_user_data import *
 from utils.general_utils import *

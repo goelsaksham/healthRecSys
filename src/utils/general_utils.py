@@ -86,8 +86,29 @@ def get_all_dates_numpy_array_hour_mean(all_dates_numpy_array):
 
 
 def remove_nans_from_array(all_dates_numpy_array):
+	"""
+	This function removes nan values from the minute time series array.
+	:param all_dates_numpy_array:
+	:return:
+	"""
 	temp = all_dates_numpy_array.reshape(-1, 24, 60)
 	minute_means = get_all_dates_numpy_array_minute_mean(all_dates_numpy_array)
 	for day_data in temp:
 		day_data[np.isnan(day_data)] = minute_means[np.isnan(day_data)]
 	return temp.reshape(-1, 1440)
+
+
+def reduce_time_series_dimension(time_series_array, time_window_length):
+	NUM_MINUTES = 24 * 60
+	return np.nanmean(time_series_array.reshape(-1, NUM_MINUTES // time_window_length, time_window_length), axis=2)
+
+
+def activity_percentage_finder(activity_label_time_series_data):
+	ratio_frac = 100 / (24 * 60)
+	level_0_activity = np.sum(activity_label_time_series_data[:, :] == 0, axis=1) * ratio_frac
+	level_1_activity = np.sum(activity_label_time_series_data[:, :] == 1, axis=1) * ratio_frac
+	level_2_activity = np.sum(activity_label_time_series_data[:, :] == 2, axis=1) * ratio_frac
+	level_3_activity = np.sum(activity_label_time_series_data[:, :] == 3, axis=1) * ratio_frac
+	return np.round(np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
+	                         dtype=np.float16).T,
+	                decimals=2)

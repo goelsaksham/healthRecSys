@@ -1,6 +1,5 @@
 import fitbit
 import gather_keys_oauth2 as Oauth2
-import datetime
 from application_secrets.fitbit_application_secrets import *
 import time
 
@@ -46,7 +45,7 @@ def get_sleep_data_for_dump(auth_client, user_id, date_str):
     sleep_json = get_sleep_data(auth_client, date_str)
     return {
         'user_id': user_id,
-        'data_type': 'sleep',
+        'data_type': 'sleep_stages_ts',
         'data': sleep_json,
         'pull_time': strftime("%Y-%m-%d %H:%M:%S", gmtime()),
         'date': date_str
@@ -54,7 +53,7 @@ def get_sleep_data_for_dump(auth_client, user_id, date_str):
 
 
 def get_all_sleeps_summary(sleep_data, user_id):
-    entire_sleep_data = sleep_data['sleep']
+    entire_sleep_data = sleep_data['sleep_stages_ts']
     full_sleep_summary = []
     for current_sleep_data in entire_sleep_data:
         current_sleep_summary = dict()
@@ -76,28 +75,34 @@ def get_all_sleeps_summary(sleep_data, user_id):
 
 def get_entire_sleep_summary(sleep_data, user_id):
     entire_summary = sleep_data['summary']
-    entire_sleep_summary = {
-        'user_id': user_id,
-        'deep_sleep_minutes': entire_summary['stages']['deep'],
-        'light_sleep_minutes': entire_summary['stages']['light'],
-        'rem_sleep_minutes': entire_summary['stages']['rem'],
-        'wake_sleep_minutes': entire_summary['stages']['wake'],
-        'total_minutes_asleep': entire_summary['totalMinutesAsleep'],
-        'total_sleep_records': entire_summary['totalSleepRecords'],
-        'total_time_in_bed': entire_summary['totalTimeInBed'],
-    }
-    return entire_sleep_summary
+    try:
+        entire_sleep_summary = {
+            'user_id': user_id,
+            'deep_sleep_minutes': entire_summary['stages']['deep'],
+            'light_sleep_minutes': entire_summary['stages']['light'],
+            'rem_sleep_minutes': entire_summary['stages']['rem'],
+            'wake_sleep_minutes': entire_summary['stages']['wake'],
+            'total_minutes_asleep': entire_summary['totalMinutesAsleep'],
+            'total_sleep_records': entire_summary['totalSleepRecords'],
+            'total_time_in_bed': entire_summary['totalTimeInBed'],
+        }
+        return entire_sleep_summary
+    except KeyError:
+        return dict()
 
 
 def get_sleep_stages_summary(sleep_data):
     sleep_summary = sleep_data['summary']
-    sleep_stages_summary = {
-        'deep': sleep_summary['stages']['deep'],
-        'light': sleep_summary['stages']['light'],
-        'rem': sleep_summary['stages']['rem'],
-        'wake': sleep_summary['stages']['wake'],
-    }
-    return sleep_stages_summary
+    try:
+        sleep_stages_summary = {
+            'deep': sleep_summary['stages']['deep'],
+            'light': sleep_summary['stages']['light'],
+            'rem': sleep_summary['stages']['rem'],
+            'wake': sleep_summary['stages']['wake'],
+        }
+        return sleep_stages_summary
+    except KeyError:
+        return dict()
 
 
 def get_sleep_enum():
@@ -109,7 +114,7 @@ def get_reverse_sleep_enum():
 
 
 def get_sleep_stages_data(sleep_data, user_id, level_enum = get_sleep_enum()):
-    entire_sleep_data = sleep_data['sleep']
+    entire_sleep_data = sleep_data['sleep_stages_ts']
     sleep_stages_data = []
     for sleep in entire_sleep_data:
         for sleep_stage in sleep['levels']['data']:
@@ -191,6 +196,10 @@ def get_steps_intraday(steps_data, user_id):
             'value': minute_data['value']
         })
     return return_steps_intraday_data
+
+
+def get_activity_level_to_activity_label_map():
+    return {0: 'sedentary', 1: 'light', 2: 'moderate', 3: 'high'}
 
 
 ###################################################################################
