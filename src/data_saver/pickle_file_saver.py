@@ -67,17 +67,17 @@ def date_iterator(user_id, auth_client, user_directory, start_date, end_date, da
 		current_date_str = current_date.strftime(date_format)
 		sleep_directory, activity_directory, calories_directory, heart_directory, steps_directory = \
 			get_all_attributes_path(user_directory)
-		# save_user_calories_data(user_id, auth_client, current_date_str, calories_directory)
-		# save_user_heart_data(user_id, auth_client, current_date_str, heart_directory)
+		save_user_calories_data(user_id, auth_client, current_date_str, calories_directory)
+		save_user_heart_data(user_id, auth_client, current_date_str, heart_directory)
 		save_user_sleep_data(user_id, auth_client, current_date_str, sleep_directory)
-		# save_user_steps_data(user_id, auth_client, current_date_str, steps_directory)
+		save_user_steps_data(user_id, auth_client, current_date_str, steps_directory)
 		if num_days != 0 and num_days % 30 == 0:
 			print("Going to sleep for 100 seconds to avoid delays")
 			time.sleep(100)
 	return current_date
 
 
-def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path=f'../../data/data_files/Saksham'):
+def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path=f'../../data/data_files/Abhiraj'):
 	USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
@@ -87,20 +87,20 @@ def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path
 		# Adding this loop along with the try except block to
 		try:
 			last_date = date_iterator(user_id, auth_client, data_dump_directory_path,
-			              datetime.today() - timedelta(days=145), datetime.today() - timedelta(days=140))
+			              datetime.today() - timedelta(days=65), datetime.today())
 			break_loop = (last_date - datetime.today()).days >= -1
 		except:
 			# sleeping
 			print('Sleeping so that no too many requests!')
 			time.sleep(1800)
-			USER_ID, CLIENT_SECRET, server = instantiate_user()
+			USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
 			ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 			auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 			user_id = get_fitbit_user_id(get_user_information(server))
 
 
 def main():
-	save_user_data_in_pickle_files()
+	save_user_data_in_pickle_files(user_name='Abhiraj')
 
 
 if __name__ == '__main__':
