@@ -18,7 +18,7 @@ all_fitbit_app_secrets = {
     },
     'Meghna': {
         'Client ID': '227ZN2',
-        'Client Secret': '81170691ca6e7094c9c64b7e473351f6'
+        'Client Secret': '238bfdb3f7d40261d81ff02f1ef8dd9c'
         # 'Client ID': '22D8XW',
         # 'Client Secret': '39823c504eeb610fed6be977d3806cee'
     },
