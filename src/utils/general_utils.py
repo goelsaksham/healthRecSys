@@ -85,17 +85,17 @@ def get_all_dates_numpy_array_hour_mean(all_dates_numpy_array):
 	return np.nanmean(get_all_dates_numpy_array_minute_mean(all_dates_numpy_array), axis=1)
 
 
-def remove_nans_from_array(all_dates_numpy_array):
+def remove_nans_from_array(all_dates_numpy_array, hours=24, mins=60):
 	"""
 	This function removes nan values from the minute time series array.
 	:param all_dates_numpy_array:
 	:return:
 	"""
-	temp = all_dates_numpy_array.reshape(-1, 24, 60)
+	temp = all_dates_numpy_array.reshape(-1, hours, mins)
 	minute_means = get_all_dates_numpy_array_minute_mean(all_dates_numpy_array)
 	for day_data in temp:
 		day_data[np.isnan(day_data)] = minute_means[np.isnan(day_data)]
-	return temp.reshape(-1, 1440)
+	return temp.reshape(-1, hours * mins)
 
 
 def reduce_time_series_dimension(time_series_array, time_window_length):
@@ -112,3 +112,17 @@ def activity_percentage_finder(activity_label_time_series_data):
 	return np.round(np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
 	                         dtype=np.float16).T,
 	                decimals=2)
+
+
+def get_time_series_window_mean_std(time_series_array, hours=24, mins=60):
+	temp_arr = time_series_array.reshape(-1, hours, mins)
+	hourly_mean = np.nanmean(temp_arr, axis=(0, -1))
+	hourly_std = np.nanstd(temp_arr, axis=(0, -1))
+	hourly_mean_time_series = np.vstack([hourly_mean] * mins).T.reshape(hours * mins)
+	hourly_std_time_series = np.vstack([hourly_std] * mins).T.reshape(hours * mins)
+	return hourly_mean_time_series, hourly_std_time_series
+
+
+def normalize_time_series_array(time_series_array, hours=24, mins=60):
+	m, s = get_time_series_window_mean_std(time_series_array, hours, mins)
+	return (time_series_array - m) / s

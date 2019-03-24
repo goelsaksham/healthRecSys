@@ -87,7 +87,7 @@ def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path
 		# Adding this loop along with the try except block to
 		try:
 			last_date = date_iterator(user_id, auth_client, data_dump_directory_path,
-			              datetime.today() - timedelta(days=65), datetime.today())
+			              datetime.today() - timedelta(days=25), datetime.today())
 			break_loop = (last_date - datetime.today()).days >= -1
 		except:
 			# sleeping
