@@ -9,21 +9,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/exploration" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/scheduler" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/data_preprocessor" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/client_secrets" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/utils" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/data_saver" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/analysis" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/database" />
       <excludeFolder url="file://$MODULE_DIR$/src/notebooks" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.6 (healthRecSys)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.6" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-  </component>
-  <component name="PyDocumentationSettings">
-    <option name="renderExternalDocumentation" value="true" />
   </component>
   <component name="TestRunnerService">
     <option name="projectConfiguration" value="Nosetests" />
