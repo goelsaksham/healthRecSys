@@ -12,13 +12,13 @@ def run_insert_query(conn, table, values):
     for column in colnames:
         command = command + column + ", "
     command = command[:-2] + ") VALUES ("
-
     for value in values:
         command = command + str(value) + ", "
     command = command[:-2] + ") RETURNING "+table+"."+colnames[0]
+    #print(command)
     cur.execute(command)
     conn.commit()
-    # print(cur.fetchall())
+    #print(cur.fetchall())
 
 
 # routine to run a delete query
@@ -43,7 +43,7 @@ def run_select_query(conn, table, column=None):
 connection_config = {
     "hostname": 'localhost',
     "username": 'postgres',
-    "password": '123',
+    "password": 'postgres',
     "database": 'postgres'
 }
 
@@ -97,7 +97,6 @@ def insert_sleep_cycles_data(date, auth_client, user_id):
     # # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     sleep_cycles_data = get_user_data.get_all_sleeps_summary(get_user_data.get_sleep_data(auth_client, date),
                                                           user_id)
-    print(sleep_cycles_data[0])
     for data in sleep_cycles_data:
         start_time = data["start_time"].split(" ")
         starttime = "timestamp '"+start_time[0]+" "+start_time[1]+"'"
@@ -119,6 +118,7 @@ def insert_sleep_cycles_data(date, auth_client, user_id):
             starttime,
             data["time_in_bed"]
         ]
+        #print(record)
         run_insert_query(database_connection, "sleep_cycles", record)
 
 
@@ -130,7 +130,7 @@ def insert_sleep_summary_data(date, auth_client, user_id):
     # # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
     sleep_summary_data = get_user_data.get_entire_sleep_summary(get_user_data.get_sleep_data(auth_client, date),
                                                               user_id)
-    print(sleep_summary_data)
+    #print(sleep_summary_data)
     record = [
         "'"+sleep_summary_data["user_id"]+"'",
         "'"+date+"'",
@@ -233,3 +233,48 @@ def insert_sleep_raw_data(date, auth_client, user_id):
     ]
     run_insert_query(database_connection, "raw_device_data", record)
 
+def insert_sleep_cycles_data(sleep_data, user_id):
+    # USER_ID, CLIENT_SECRET, server = get_user_data.instantiate_user()
+    # ACCESS_TOKEN, REFRESH_TOKEN = get_user_data.get_access_token(server), get_user_data.get_refresh_token(server)
+    # # auth_client = get_user_data.get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    # #
+    # # user_id = get_user_data.get_fitbit_user_id(get_user_data.get_user_information(server))
+    sleep_cycles_data = get_user_data.get_all_sleeps_summary(sleep_data, user_id)
+    for data in sleep_cycles_data:
+        start_time = data["start_time"].split(" ")
+        starttime = "timestamp '"+start_time[0]+" "+start_time[1]+"'"
+        if data["main_sleep"]:
+            is_main_sleep = 1
+        else:
+            is_main_sleep = 0
+
+        record = [
+            "'"+data["user_id"]+"'",
+            "'"+data["date_of_sleep"]+"'",
+            data["duration"],
+            data["efficiency"],
+            is_main_sleep,
+            data["minutes_after_wakeup"],
+            data["minutes_asleep"],
+            data["minutes_awake"],
+            data["minutes_to_fall_asleep"],
+            starttime,
+            data["time_in_bed"]
+        ]
+        #print(record)
+        run_insert_query(database_connection, "sleep_cycles", record)
+
+
+
+def main():
+    try:
+        cur = database_connection.cursor()
+        cur.execute('SELECT count(*) from raw_device_data')
+        print(cur.fetchall())
+
+    except psycopg2.OperationalError:
+        print("error")
+        pass
+
+if __name__ == '__main__':
+        main()
