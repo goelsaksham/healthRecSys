@@ -111,5 +111,9 @@ venv.bak/
 .xml
 .iml
 
+# Jupyter Notebooks
+.ipynb
+.ipynb
+
 # Data folder Stuff
 #*.pickle
