@@ -113,7 +113,6 @@ venv.bak/
 
 # Jupyter Notebooks
 .ipynb
-.ipynb
 
 # Data folder Stuff
 #*.pickle
