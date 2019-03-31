@@ -98,8 +98,8 @@ def remove_nans_from_array(all_dates_numpy_array, hours=24, mins=60):
 	return temp.reshape(-1, hours * mins)
 
 
-def reduce_time_series_dimension(time_series_array, time_window_length):
-	NUM_MINUTES = 24 * 60
+def reduce_time_series_dimension(time_series_array, time_window_length, hours=24, mins=60):
+	NUM_MINUTES = hours * mins
 	return np.nanmean(time_series_array.reshape(-1, NUM_MINUTES // time_window_length, time_window_length), axis=2)
 
 
@@ -109,9 +109,8 @@ def activity_percentage_finder(activity_label_time_series_data):
 	level_1_activity = np.sum(activity_label_time_series_data[:, :] == 1, axis=1) * ratio_frac
 	level_2_activity = np.sum(activity_label_time_series_data[:, :] == 2, axis=1) * ratio_frac
 	level_3_activity = np.sum(activity_label_time_series_data[:, :] == 3, axis=1) * ratio_frac
-	return np.round(np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
-	                         dtype=np.float16).T,
-	                decimals=2)
+	return np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
+	                dtype=np.float16).T
 
 
 def get_time_series_window_mean_std(time_series_array, hours=24, mins=60):
