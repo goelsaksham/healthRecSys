@@ -103,8 +103,8 @@ def reduce_time_series_dimension(time_series_array, time_window_length, hours=24
 	return np.nanmean(time_series_array.reshape(-1, NUM_MINUTES // time_window_length, time_window_length), axis=2)
 
 
-def activity_percentage_finder(activity_label_time_series_data):
-	ratio_frac = 100 / (24 * 60)
+def activity_percentage_finder(activity_label_time_series_data, hours=24, mins=60):
+	ratio_frac = 100 / (hours * mins)
 	level_0_activity = np.sum(activity_label_time_series_data[:, :] == 0, axis=1) * ratio_frac
 	level_1_activity = np.sum(activity_label_time_series_data[:, :] == 1, axis=1) * ratio_frac
 	level_2_activity = np.sum(activity_label_time_series_data[:, :] == 2, axis=1) * ratio_frac

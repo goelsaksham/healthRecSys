@@ -53,7 +53,7 @@ from scipy.stats import entropy
 
 # #### User Data Loader
 
-# In[2]:
+# In[27]:
 
 
 # First we load the data for each user seperately from their own numpy array and then stack them to get the final array
@@ -93,7 +93,7 @@ sleep_effeciency_ratio = np.hstack(sleep_effeciency_ratio)
 sleep_stages_summary = pd.concat(sleep_stages_summary)
 
 
-# In[3]:
+# In[26]:
 
 
 activity_percentages = activity_percentages * 1440 / 100
@@ -101,14 +101,14 @@ activity_percentages = activity_percentages * 1440 / 100
 
 # #### Check for the shape of all the arrays and dataframes
 
-# In[4]:
+# In[28]:
 
 
 # Check for the shape of all the arrays and dataframes
 heart_rate_ts_data.shape, calories_ts_data.shape, activity_label_ts_data.shape, sleep_effeciency_ratio.shape, sleep_stages_summary.shape
 
 
-# In[5]:
+# In[29]:
 
 
 # Make sure activity value does not have a nan field (not sure how we would fill this)
@@ -125,7 +125,7 @@ np.isnan(heart_rate_ts_data).any(), np.isnan(calories_ts_data).any()
 # 
 # This section will essentially find the trends from the original data
 
-# In[6]:
+# In[30]:
 
 
 trend_window_length = 10
@@ -133,7 +133,7 @@ trend_window_length = 10
 
 # #### Heart Trends
 
-# In[7]:
+# In[31]:
 
 
 heart_trends = []
@@ -148,7 +148,7 @@ heart_trends = remove_nans_from_array(heart_trends)
 heart_trends.shape, np.isnan(heart_trends).any()
 
 
-# In[8]:
+# In[32]:
 
 
 # plotting heart trends to asses the fit to the overall data
@@ -158,7 +158,7 @@ plt.plot(heart_trends[0, :])
 
 # #### Calories Trends
 
-# In[9]:
+# In[33]:
 
 
 calories_trends = []
@@ -171,7 +171,7 @@ calories_trends = remove_nans_from_array(calories_trends)
 calories_trends.shape, np.isnan(calories_trends).any()
 
 
-# In[10]:
+# In[34]:
 
 
 # plotting caloires trends to asses the fit to the overall data
@@ -183,7 +183,7 @@ plt.plot(calories_trends[0, :])
 # 
 # This section chips away some heart data
 
-# In[11]:
+# In[35]:
 
 
 heart_trends = heart_trends[:, 360:1080]
@@ -195,13 +195,13 @@ heart_trends.shape, calories_trends.shape
 # 
 # This section will reduce the dimensions of the arrays so that we can easily apply different clustering techniques on them
 
-# In[12]:
+# In[36]:
 
 
 mean_window_length = 15
 
 
-# In[13]:
+# In[37]:
 
 
 # Reduce the dimension of the arrays
@@ -215,7 +215,7 @@ reduced_heart_trends.shape, reduced_calories_trends.shape
 # 
 # In this section of the notebook we try to find the optimal boundary for constructing the sleep labels using different techniques
 
-# In[14]:
+# In[38]:
 
 
 # Constructing a histogram plot for the sleep efficiency ratio.
@@ -226,7 +226,7 @@ plt.ylabel('Frequency')
 plt.title('Sleep Efficiency Histogram')
 
 
-# In[15]:
+# In[39]:
 
 
 # Constructing a histogram plot for the different sleep stages.
@@ -258,7 +258,7 @@ ax[1, 1].set_title('Minutes in Deep Sleep Histogram')
 # 
 # Example: 0.05 - 0.875 and above, 0.825 and below
 
-# In[87]:
+# In[40]:
 
 
 final_sleep_labels = sleep_effeciency_ratio > 0.89
@@ -267,7 +267,7 @@ sns.distplot(np.array(final_sleep_labels, dtype=np.int), kde=False)
 
 # ### HeatMap for Euclidean and DTW Distances
 
-# In[18]:
+# In[41]:
 
 
 good_sleep_heart_trends = reduced_heart_trends[final_sleep_labels]
@@ -277,7 +277,7 @@ ordered_heart_trends = np.vstack((good_sleep_heart_trends, poor_sleep_heart_tren
 print(ordered_heart_trends.shape)
 
 
-# In[19]:
+# In[42]:
 
 
 good_sleep_calories_trends = reduced_calories_trends[final_sleep_labels]
@@ -346,7 +346,7 @@ ax[1].set_title('All Sleep L1 Norm Distance Cross Matrix for Calories Trends')
 # 
 # In this section of the notebook we aggregate the activity labels of a person from minute level to percentage level
 
-# In[24]:
+# In[43]:
 
 
 # Constructing a histogram plot for the different activity level percentages.
@@ -372,7 +372,7 @@ ax[1, 1].set_ylabel('Frequency')
 ax[1, 1].set_title('% Vigorous Activity Histogram')
 
 
-# In[25]:
+# In[44]:
 
 
 # Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
@@ -410,11 +410,11 @@ ax[1, 1].legend()
 # 
 # In this section of the notebook we apply different clustering techniques on the data that we have got and see what are the different recipes
 
-# In[26]:
+# In[46]:
 
 
 num_master_clusters = 4
-num_activity_clusters = 8
+num_activity_clusters = 4
 
 
 # ### K-Means - Euclidean
@@ -423,7 +423,7 @@ num_activity_clusters = 8
 
 # #### Getting the Best Model
 
-# In[27]:
+# In[47]:
 
 
 kmeans_mod = get_best_clustering_model(lambda num_clusters: KMeans(num_clusters), reduced_heart_trends)
@@ -431,7 +431,7 @@ kmeans_mod = get_best_clustering_model(lambda num_clusters: KMeans(num_clusters)
 
 # #### Fitting the Model
 
-# In[29]:
+# In[48]:
 
 
 # Set the seed so that get the same clustering everytime
@@ -446,7 +446,7 @@ print(kmeans_mod.n_clusters, sil_score)
 np.unique(cluster_assignments, return_counts=True)
 
 
-# In[30]:
+# In[49]:
 
 
 # Update the number of activity clusters based on the minimum amount of records assigned to a cluster
@@ -454,7 +454,7 @@ num_activity_clusters = min(num_activity_clusters, *(np.unique(cluster_assignmen
 print('Updated Number of activity clusters:', num_activity_clusters)
 
 
-# In[31]:
+# In[50]:
 
 
 # Visualizing the number of points in each cluster
@@ -463,7 +463,7 @@ sns.distplot(cluster_assignments, kde=False)
 
 # #### Visualization of Clusters
 
-# In[32]:
+# In[51]:
 
 
 # Simple Cluster Visualization
@@ -477,7 +477,7 @@ plt.title('Clusters Visualized')
 plt.legend([f'Cluster: {i+1}' for i in range(4)])
 
 
-# In[33]:
+# In[52]:
 
 
 # Cluster Visualization based on Sleep Efficiency
@@ -491,7 +491,7 @@ plt.title('Clusters Visualized')
 plt.legend([])
 
 
-# In[34]:
+# In[53]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
@@ -519,7 +519,7 @@ ax[1].legend([])
 # 
 # Finding cluster purity based on the sleep labels
 
-# In[36]:
+# In[54]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster 
@@ -808,13 +808,13 @@ ax[1, 1].legend()
 
 # #### Sub-Clustering on Activity Data
 
-# In[46]:
+# In[55]:
 
 
 sub_clusters = activity_percentage_clusterer(KMeans(n_clusters=num_activity_clusters), cluster_assignments, activity_percentages)
 
 
-# In[47]:
+# In[56]:
 
 
 # Sanity Check for the number of points in each cluster
@@ -825,7 +825,7 @@ for sub_cluster in sub_clusters:
 
 # ##### Cluster Purity in each subcluster
 
-# In[48]:
+# In[57]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster
@@ -842,14 +842,14 @@ for index, sub_cluster in enumerate(sub_clusters):
             print(f'Sub Cluster Number: {sub_cluster_assignment}, No Points assigned')
 
 
-# In[49]:
+# In[58]:
 
 
 sleep_recipes = get_good_sleep_recipes(cluster_assignments, sub_clusters, activity_percentages, final_sleep_labels)
 sleep_recipes
 
 
-# In[50]:
+# In[59]:
 
 
 plt.figure(0)
@@ -866,19 +866,19 @@ plt.bar(['S', 'L', 'M', 'V'], (sleep_recipes / 1440 * 100)[3])
 # 
 # Here we apply K-Means on the data with Dynamic Time Wrapping (DTW) as the distance metric
 
-# In[51]:
+# In[60]:
 
 
-num_activity_clusters = 8
+num_activity_clusters = 2
 
 
 # #### Fitting the Model
 
-# In[52]:
+# In[62]:
 
 
 clusterer = get_best_clustering_model(lambda num_clusters: TimeSeriesKMeans(num_clusters, metric='dtw', max_iter=50), 
-                                       reduced_heart_trends, cluster_range=range(2, 5))
+                                       reduced_heart_trends, cluster_range=range(2, 3))
 
 
 # In[ ]:
@@ -1314,7 +1314,7 @@ sleep_recipes
 
 # #### Defining the distance function using the K-L Divergence
 
-# In[53]:
+# In[63]:
 
 
 def k_l_distance(x, y):
@@ -1335,7 +1335,7 @@ ax[1].set_title('All Sleep K-L Divergence Cross Matrix for Calories Trends')
 
 # #### Best Model
 
-# In[55]:
+# In[64]:
 
 
 kl_best_mod = get_best_clustering_model(lambda num_clusters: KL_Kmeans(num_clusters), reduced_heart_trends, 
@@ -1344,7 +1344,7 @@ kl_best_mod = get_best_clustering_model(lambda num_clusters: KL_Kmeans(num_clust
 
 # #### Fitting the Model
 
-# In[56]:
+# In[65]:
 
 
 # Set the seed so that get the same clustering everytime
@@ -1359,7 +1359,7 @@ print(len(centres), sil_score)
 np.unique(cluster_assignments, return_counts=True)
 
 
-# In[57]:
+# In[66]:
 
 
 # Update the number of activity clusters based on the minimum amount of records assigned to a cluster
@@ -1367,7 +1367,7 @@ num_activity_clusters = min(num_activity_clusters, *(np.unique(cluster_assignmen
 print('Updated Number of activity clusters:', num_activity_clusters)
 
 
-# In[58]:
+# In[67]:
 
 
 # Visualizing the number of points in each cluster
@@ -1376,7 +1376,7 @@ sns.distplot(cluster_assignments, kde=False)
 
 # #### Visualization of Clusters
 
-# In[59]:
+# In[68]:
 
 
 # Simple Cluster Visualization
@@ -1390,7 +1390,7 @@ plt.title('Clusters Visualized')
 plt.legend([f'Cluster: {i+1}' for i in range(4)])
 
 
-# In[60]:
+# In[69]:
 
 
 # Cluster Visualization based on Sleep Efficiency
@@ -1404,7 +1404,7 @@ plt.title('Clusters Visualized')
 plt.legend([])
 
 
-# In[61]:
+# In[70]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
@@ -1434,7 +1434,7 @@ ax[1].legend([])
 # 
 # Finding cluster purity based on the sleep labels
 
-# In[62]:
+# In[71]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster 
@@ -1445,7 +1445,7 @@ for master_cluster_num in range(len(centres)):
     print(f'Cluster Number: {master_cluster_num}, Purity:', max(pos_sleep_label_purity, 1 - pos_sleep_label_purity))
 
 
-# In[63]:
+# In[72]:
 
 
 # Constructing a histogram plot for visualizing the sleep efficiency cluster purity in all cluster.
@@ -1723,13 +1723,13 @@ ax[1, 1].legend()
 
 # #### Sub-Clustering on Activity Data
 
-# In[72]:
+# In[81]:
 
 
-sub_clusters = activity_percentage_clusterer(KL_Kmeans(num_clusters=num_activity_clusters), cluster_assignments, activity_percentages)
+sub_clusters = activity_percentage_clusterer(KL_Kmeans(num_clusters=8), cluster_assignments, activity_percentages)
 
 
-# In[73]:
+# In[82]:
 
 
 # Sanity Check for the number of points in each cluster
@@ -1740,7 +1740,7 @@ for sub_cluster in sub_clusters:
 
 # ##### Cluster Purity in each subcluster
 
-# In[74]:
+# In[83]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster
@@ -1758,17 +1758,23 @@ for index, sub_cluster in enumerate(sub_clusters):
             print(f'Sub Cluster Number: {sub_cluster_assignment}, No Points assigned')
 
 
-# In[81]:
+# In[84]:
 
 
 sleep_recipes = get_good_sleep_recipes(cluster_assignments, sub_clusters, activity_percentages, final_sleep_labels, good_sleep_ratio=1.)
 sleep_recipes
 
 
-# In[77]:
+# In[85]:
 
 
 for i, sleep_recipe in enumerate(sleep_recipes):
     plt.figure(i)
     plt.bar(['S', 'L', 'M', 'V'], (sleep_recipe / 1440 * 100))
+
+
+# In[ ]:
+
+
+
 
