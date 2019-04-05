@@ -7,7 +7,7 @@
 
 # ## Importing Required Libraries
 
-# In[1]:
+# In[2]:
 
 
 # Importing scientific libarires required for analysis and handling data
@@ -53,7 +53,7 @@ from scipy.stats import entropy
 
 # #### User Data Loader
 
-# In[27]:
+# In[49]:
 
 
 # First we load the data for each user seperately from their own numpy array and then stack them to get the final array
@@ -93,7 +93,7 @@ sleep_effeciency_ratio = np.hstack(sleep_effeciency_ratio)
 sleep_stages_summary = pd.concat(sleep_stages_summary)
 
 
-# In[26]:
+# In[ ]:
 
 
 activity_percentages = activity_percentages * 1440 / 100
@@ -101,14 +101,14 @@ activity_percentages = activity_percentages * 1440 / 100
 
 # #### Check for the shape of all the arrays and dataframes
 
-# In[28]:
+# In[50]:
 
 
 # Check for the shape of all the arrays and dataframes
 heart_rate_ts_data.shape, calories_ts_data.shape, activity_label_ts_data.shape, sleep_effeciency_ratio.shape, sleep_stages_summary.shape
 
 
-# In[29]:
+# In[51]:
 
 
 # Make sure activity value does not have a nan field (not sure how we would fill this)
@@ -125,7 +125,7 @@ np.isnan(heart_rate_ts_data).any(), np.isnan(calories_ts_data).any()
 # 
 # This section will essentially find the trends from the original data
 
-# In[30]:
+# In[52]:
 
 
 trend_window_length = 10
@@ -133,7 +133,7 @@ trend_window_length = 10
 
 # #### Heart Trends
 
-# In[31]:
+# In[53]:
 
 
 heart_trends = []
@@ -148,17 +148,21 @@ heart_trends = remove_nans_from_array(heart_trends)
 heart_trends.shape, np.isnan(heart_trends).any()
 
 
-# In[32]:
+# In[67]:
 
 
 # plotting heart trends to asses the fit to the overall data
-plt.plot(heart_rate_ts_data[0, :])
-plt.plot(heart_trends[0, :])
+plt.figure(figsize=(10, 5))
+plt.plot(heart_rate_ts_data[0, :], lw=2, label='Original Heart Rate')
+plt.plot(heart_trends[0, :], color='r', lw=2, label='Decomposed Heart Trends')
+plt.xlabel('Minute')
+plt.ylabel('BPM')
+plt.legend()
 
 
 # #### Calories Trends
 
-# In[33]:
+# In[69]:
 
 
 calories_trends = []
@@ -171,23 +175,27 @@ calories_trends = remove_nans_from_array(calories_trends)
 calories_trends.shape, np.isnan(calories_trends).any()
 
 
-# In[34]:
+# In[71]:
 
 
 # plotting caloires trends to asses the fit to the overall data
-plt.plot(calories_ts_data[0, :])
-plt.plot(calories_trends[0, :])
+plt.figure(figsize=(10, 5))
+plt.plot(calories_ts_data[0, :], lw=2, label='Original Calories Burned')
+plt.plot(calories_trends[0, :], color='r', lw=2, label='Decomposed Calories Burned Trends')
+plt.xlabel('Minute')
+plt.ylabel('Calories Burned')
+plt.legend()
 
 
 # # Chipping the Data
 # 
 # This section chips away some heart data
 
-# In[35]:
+# In[11]:
 
 
-heart_trends = heart_trends[:, 360:1080]
-calories_trends = calories_trends[:, 360:1080]
+heart_trends = heart_trends[:, 480:1200]
+calories_trends = calories_trends[:, 480:1200]
 heart_trends.shape, calories_trends.shape
 
 
@@ -195,13 +203,13 @@ heart_trends.shape, calories_trends.shape
 # 
 # This section will reduce the dimensions of the arrays so that we can easily apply different clustering techniques on them
 
-# In[36]:
+# In[12]:
 
 
-mean_window_length = 15
+mean_window_length = 10
 
 
-# In[37]:
+# In[13]:
 
 
 # Reduce the dimension of the arrays
@@ -215,18 +223,18 @@ reduced_heart_trends.shape, reduced_calories_trends.shape
 # 
 # In this section of the notebook we try to find the optimal boundary for constructing the sleep labels using different techniques
 
-# In[38]:
+# In[34]:
 
 
 # Constructing a histogram plot for the sleep efficiency ratio.
 # Sleep Efficiency Ratio is found as total_time_asleep / total_time_in_bed
-sns.distplot(sleep_effeciency_ratio)
+sns.distplot(sleep_effeciency_ratio, kde=False)
 plt.xlabel('Sleep Efficiency')
 plt.ylabel('Frequency')
-plt.title('Sleep Efficiency Histogram')
+plt.title('Distribution of sleep efficiency of all subjects')
 
 
-# In[39]:
+# In[14]:
 
 
 # Constructing a histogram plot for the different sleep stages.
@@ -258,7 +266,16 @@ ax[1, 1].set_title('Minutes in Deep Sleep Histogram')
 # 
 # Example: 0.05 - 0.875 and above, 0.825 and below
 
-# In[40]:
+# In[46]:
+
+
+sns.barplot(['Poor Sleep', 'Good Sleep'], [np.sum(~final_sleep_labels), np.sum(final_sleep_labels)], hue=[True, True])
+plt.legend([])
+plt.title('Number of Records v/s Sleep Class')
+plt.ylabel('Number of Records')
+
+
+# In[15]:
 
 
 final_sleep_labels = sleep_effeciency_ratio > 0.89
@@ -267,7 +284,7 @@ sns.distplot(np.array(final_sleep_labels, dtype=np.int), kde=False)
 
 # ### HeatMap for Euclidean and DTW Distances
 
-# In[41]:
+# In[16]:
 
 
 good_sleep_heart_trends = reduced_heart_trends[final_sleep_labels]
@@ -277,7 +294,7 @@ ordered_heart_trends = np.vstack((good_sleep_heart_trends, poor_sleep_heart_tren
 print(ordered_heart_trends.shape)
 
 
-# In[42]:
+# In[17]:
 
 
 good_sleep_calories_trends = reduced_calories_trends[final_sleep_labels]
@@ -287,10 +304,16 @@ ordered_calories_trends = np.vstack((good_sleep_calories_trends, poor_sleep_calo
 print(ordered_calories_trends.shape)
 
 
+# In[19]:
+
+
+get_ipython().run_cell_magic('time', '', 'dtw_dist_heart = cdist_dtw(ordered_heart_trends)\ndtw_dist_calories = cdist_dtw(ordered_calories_trends)')
+
+
 # In[20]:
 
 
-get_ipython().run_cell_magic('time', '', 'dtw_dist_heart = cdist_dtw(ordered_heart_trends)\ndtw_dist_calories = cdist_dtw(ordered_calories_trends)\neuc_dist_heart = distance.cdist(ordered_heart_trends, ordered_heart_trends)\neuc_dist_calories = distance.cdist(ordered_calories_trends, ordered_calories_trends)')
+get_ipython().run_cell_magic('time', '', 'euc_dist_heart = distance.cdist(ordered_heart_trends, ordered_heart_trends)\neuc_dist_calories = distance.cdist(ordered_calories_trends, ordered_calories_trends)')
 
 
 # In[21]:
@@ -302,51 +325,68 @@ l1_dist_heart = distance.cdist(ordered_heart_trends, ordered_heart_trends, 'mink
 l1_dist_calories = distance.cdist(ordered_calories_trends, ordered_calories_trends, 'minkowski', p=1)
 
 
-# In[22]:
+# In[26]:
+
+
+cor_dist_heart = distance.cdist(ordered_heart_trends, ordered_heart_trends, 'correlation')
+cor_dist_calories = distance.cdist(ordered_calories_trends, ordered_calories_trends, 'correlation')
+
+
+# In[79]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-sns.heatmap(dtw_dist_heart, xticklabels=10, yticklabels=10, ax=ax[0])
-ax[0].set_title('All Sleep DTW Distance Cross Matrix for Heart Trends')
-sns.heatmap(dtw_dist_calories, xticklabels=10, yticklabels=10, ax=ax[1])
-ax[1].set_title('All Sleep DTW Distance Cross Matrix for Calories Trends')
+sns.heatmap(dtw_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
+ax[0].set_title('DTW Distance Cross Matrix for Heart Trends')
+sns.heatmap(dtw_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
+ax[1].set_title('DTW Distance Cross Matrix for Calories Trends')
 
 
-# In[23]:
-
-
-fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-sns.heatmap(euc_dist_heart, xticklabels=10, yticklabels=10, ax=ax[0])
-ax[0].set_title('All Sleep Euclidean Distance Cross Matrix for Heart Trends')
-sns.heatmap(euc_dist_calories, xticklabels=10, yticklabels=10, ax=ax[1])
-ax[1].set_title('All Sleep Euclidean Distance Cross Matrix for Calories Trends')
-
-
-# In[22]:
+# In[78]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-sns.heatmap(m_dist_heart, xticklabels=10, yticklabels=10, ax=ax[0])
+sns.heatmap(euc_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
+ax[0].set_title('L-2 Norm Distance Cross Matrix for Heart Trends')
+sns.heatmap(euc_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
+ax[1].set_title('L-2 Norm Distance Cross Matrix for Calories Trends')
+
+
+# In[74]:
+
+
+fig, ax = plt.subplots(1, 2, figsize=(15, 5))
+sns.heatmap(m_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
 ax[0].set_title('All Sleep Mahalanobis Distance Cross Matrix for Heart Trends')
-sns.heatmap(m_dist_calories, xticklabels=10, yticklabels=10, ax=ax[1])
+sns.heatmap(m_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
 ax[1].set_title('All Sleep Mahalanobis Distance Cross Matrix for Calories Trends')
 
 
-# In[23]:
+# In[77]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-sns.heatmap(l1_dist_heart, xticklabels=10, yticklabels=10, ax=ax[0])
-ax[0].set_title('All Sleep L1 Norm Distance Cross Matrix for Heart Trends')
-sns.heatmap(l1_dist_calories, xticklabels=10, yticklabels=10, ax=ax[1])
-ax[1].set_title('All Sleep L1 Norm Distance Cross Matrix for Calories Trends')
+sns.heatmap(l1_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
+ax[0].set_title('L1 Norm Distance Cross Matrix for Heart Trends')
+sns.heatmap(l1_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
+ax[1].set_title('L1 Norm Distance Cross Matrix for Calories Trends')
+
+
+# In[76]:
+
+
+fig, ax = plt.subplots(1, 2, figsize=(15, 5))
+sns.heatmap(cor_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
+ax[0].set_title('Correlation Cross Matrix for Heart Trends')
+sns.heatmap(cor_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
+ax[1].set_title('Correlation Cross Matrix for Calories Trends')
 
 
 # ## Activity Percentages
 # 
 # In this section of the notebook we aggregate the activity labels of a person from minute level to percentage level
 
-# In[43]:
+# In[ ]:
 
 
 # Constructing a histogram plot for the different activity level percentages.
@@ -372,7 +412,7 @@ ax[1, 1].set_ylabel('Frequency')
 ax[1, 1].set_title('% Vigorous Activity Histogram')
 
 
-# In[44]:
+# In[ ]:
 
 
 # Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
@@ -410,11 +450,11 @@ ax[1, 1].legend()
 # 
 # In this section of the notebook we apply different clustering techniques on the data that we have got and see what are the different recipes
 
-# In[46]:
+# In[125]:
 
 
 num_master_clusters = 4
-num_activity_clusters = 4
+num_activity_clusters = 12
 
 
 # ### K-Means - Euclidean
@@ -423,22 +463,22 @@ num_activity_clusters = 4
 
 # #### Getting the Best Model
 
-# In[47]:
+# In[118]:
 
 
-kmeans_mod = get_best_clustering_model(lambda num_clusters: KMeans(num_clusters), reduced_heart_trends)
+kmeans_mod = get_purest_clustering_model(lambda num_clusters: KMeans(num_clusters), reduced_heart_trends, final_sleep_labels)
 
 
 # #### Fitting the Model
 
-# In[48]:
+# In[124]:
 
 
 # Set the seed so that get the same clustering everytime
 # random.seed(2)
 # np.random.seed(1000)
 # Performing the Clustering
-# kmeans_mod = KMeans(n_clusters=num_master_clusters)
+kmeans_mod = KMeans(n_clusters=12)
 kmeans_mod.fit(reduced_heart_trends)
 cluster_assignments = kmeans_mod.predict(reduced_heart_trends)
 sil_score = silhouette_score(reduced_heart_trends, cluster_assignments)
@@ -446,7 +486,13 @@ print(kmeans_mod.n_clusters, sil_score)
 np.unique(cluster_assignments, return_counts=True)
 
 
-# In[49]:
+# In[126]:
+
+
+get_all_clusters_sleep_purity(cluster_assignments, final_sleep_labels)
+
+
+# In[127]:
 
 
 # Update the number of activity clusters based on the minimum amount of records assigned to a cluster
@@ -454,7 +500,7 @@ num_activity_clusters = min(num_activity_clusters, *(np.unique(cluster_assignmen
 print('Updated Number of activity clusters:', num_activity_clusters)
 
 
-# In[50]:
+# In[98]:
 
 
 # Visualizing the number of points in each cluster
@@ -463,35 +509,37 @@ sns.distplot(cluster_assignments, kde=False)
 
 # #### Visualization of Clusters
 
-# In[51]:
+# In[105]:
 
 
 # Simple Cluster Visualization
 pca_mod = PCA(2)
 pca_heart = pca_mod.fit_transform(reduced_heart_trends)
 plt.figure(figsize=(7, 5))
-sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=cluster_assignments, style=cluster_assignments)
+# sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=cluster_assignments, style=cluster_assignments)
+sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=cluster_assignments)#, size=cluster_assignments)
 plt.xlabel('PCA Dim 1')
 plt.ylabel('PCA Dim 2')
-plt.title('Clusters Visualized')
-plt.legend([f'Cluster: {i+1}' for i in range(4)])
+plt.title('Visualization of Clusters')
+# plt.legend([f'Cluster: {i+1}' for i in range(4)])
+plt.legend([])
 
 
-# In[52]:
+# In[103]:
 
 
 # Cluster Visualization based on Sleep Efficiency
 pca_mod = PCA(2)
 pca_heart = pca_mod.fit_transform(reduced_heart_trends)
 plt.figure(figsize=(7, 5))
-sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=final_sleep_labels, style=cluster_assignments)
+sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], size=final_sleep_labels, hue=cluster_assignments)
 plt.xlabel('PCA Dim 1')
 plt.ylabel('PCA Dim 2')
 plt.title('Clusters Visualized')
 plt.legend([])
 
 
-# In[53]:
+# In[ ]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
@@ -519,7 +567,7 @@ ax[1].legend([])
 # 
 # Finding cluster purity based on the sleep labels
 
-# In[54]:
+# In[ ]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster 
@@ -530,291 +578,15 @@ for master_cluster_num in range(len(kmeans_mod.cluster_centers_)):
     print(f'Cluster Number: {master_cluster_num}, Purity:', max(pos_sleep_label_purity, 1 - pos_sleep_label_purity))
 
 
-# In[37]:
-
-
-# Constructing a histogram plot for visualizing the sleep efficiency cluster purity in all cluster.
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==0], dtype=np.int16), ax = ax[0, 0], kde=False)
-ax[0, 0].set_xlabel('Good Sleep?')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('Cluster 1')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==1], dtype=np.int16), ax = ax[0, 1], kde=False)
-ax[0, 1].set_xlabel('Good Sleep?')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('Cluster 2')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==2], dtype=np.int16), ax = ax[1, 0], kde=False)
-ax[1, 0].set_xlabel('Good Sleep?')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('Cluster 3')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==3], dtype=np.int16), ax = ax[1, 1], kde=False)
-ax[1, 1].set_xlabel('Good Sleep?')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('Cluster 4')
-
-
-# #### Activity Histograms for Clusters
-
-# #### Cluster: 1
-
-# In[38]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[39]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 2
-
-# In[40]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[41]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 3
-
-# In[42]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[43]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 4
-
-# In[44]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[45]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
 # #### Sub-Clustering on Activity Data
 
-# In[55]:
+# In[128]:
 
 
 sub_clusters = activity_percentage_clusterer(KMeans(n_clusters=num_activity_clusters), cluster_assignments, activity_percentages)
 
 
-# In[56]:
+# In[107]:
 
 
 # Sanity Check for the number of points in each cluster
@@ -825,7 +597,7 @@ for sub_cluster in sub_clusters:
 
 # ##### Cluster Purity in each subcluster
 
-# In[57]:
+# In[108]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster
@@ -842,31 +614,28 @@ for index, sub_cluster in enumerate(sub_clusters):
             print(f'Sub Cluster Number: {sub_cluster_assignment}, No Points assigned')
 
 
-# In[58]:
+# In[129]:
 
 
 sleep_recipes = get_good_sleep_recipes(cluster_assignments, sub_clusters, activity_percentages, final_sleep_labels)
-sleep_recipes
+sleep_recipes * 720 / 100
 
 
-# In[59]:
+# In[132]:
 
 
-plt.figure(0)
-plt.bar(['S', 'L', 'M', 'V'], (sleep_recipes / 1440 * 100)[0])
-plt.figure(1)
-plt.bar(['S', 'L', 'M', 'V'], (sleep_recipes / 1440 * 100)[1])
-plt.figure(2)
-plt.bar(['S', 'L', 'M', 'V'], (sleep_recipes / 1440 * 100)[2])
-plt.figure(3)
-plt.bar(['S', 'L', 'M', 'V'], (sleep_recipes / 1440 * 100)[3])
+for i, sleep_recipe in enumerate(sleep_recipes):
+    plt.figure(i)
+    plt.bar(['Sedentary', 'Light', 'Moderate', 'Vigorous'], (sleep_recipe * 720 / 100))
+    plt.ylabel('Minutes')
+    plt.title('Activity Recipes for Sleep')
 
 
 # ### K-Means - DTW
 # 
 # Here we apply K-Means on the data with Dynamic Time Wrapping (DTW) as the distance metric
 
-# In[60]:
+# In[ ]:
 
 
 num_activity_clusters = 2
@@ -874,7 +643,7 @@ num_activity_clusters = 2
 
 # #### Fitting the Model
 
-# In[62]:
+# In[ ]:
 
 
 clusterer = get_best_clustering_model(lambda num_clusters: TimeSeriesKMeans(num_clusters, metric='dtw', max_iter=50), 
@@ -893,19 +662,19 @@ clusterer
 clusterer.labels_
 
 
-# In[65]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '# Setting the seed\nclusterer.fit(reduced_heart_trends)\ncluster_assignments = clusterer.labels_\nsil_score = silhouette_score(reduced_heart_trends, cluster_assignments)\nprint(clusterer.n_clusters, sil_score)\nnp.unique(cluster_assignments, return_counts=True)')
 
 
-# In[66]:
+# In[ ]:
 
 
 print(np.unique(cluster_assignments, return_counts=True))
 
 
-# In[67]:
+# In[ ]:
 
 
 # Update the number of activity clusters based on the minimum amount of records assigned to a cluster
@@ -913,7 +682,7 @@ num_activity_clusters = min(num_activity_clusters, *(np.unique(cluster_assignmen
 print('Updated Number of activity clusters:', num_activity_clusters)
 
 
-# In[68]:
+# In[ ]:
 
 
 # Visualizing the number of points in each cluster
@@ -922,7 +691,7 @@ sns.distplot(cluster_assignments, kde=False)
 
 # #### Visualization of Clusters
 
-# In[69]:
+# In[ ]:
 
 
 # Simple Cluster Visualization
@@ -936,7 +705,7 @@ plt.title('Clusters Visualized')
 plt.legend([f'Cluster: {i+1}' for i in range(4)])
 
 
-# In[70]:
+# In[ ]:
 
 
 # Cluster Visualization based on Sleep Efficiency
@@ -950,7 +719,7 @@ plt.title('Clusters Visualized')
 plt.legend([])
 
 
-# In[71]:
+# In[ ]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
@@ -978,7 +747,7 @@ ax[1].legend([])
 # 
 # Finding cluster purity based on the sleep labels
 
-# In[74]:
+# In[ ]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster 
@@ -989,291 +758,15 @@ for master_cluster_num in np.unique(cluster_assignments):
     print(f'Cluster Number: {master_cluster_num}, Purity:', max(pos_sleep_label_purity, 1 - pos_sleep_label_purity))
 
 
-# In[96]:
-
-
-# Constructing a histogram plot for visualizing the sleep efficiency cluster purity in all cluster.
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==0], dtype=np.int16), ax = ax[0, 0], kde=False)
-ax[0, 0].set_xlabel('Good Sleep?')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('Cluster 1')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==1], dtype=np.int16), ax = ax[0, 1], kde=False)
-ax[0, 1].set_xlabel('Good Sleep?')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('Cluster 2')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==2], dtype=np.int16), ax = ax[1, 0], kde=False)
-ax[1, 0].set_xlabel('Good Sleep?')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('Cluster 3')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==3], dtype=np.int16), ax = ax[1, 1], kde=False)
-ax[1, 1].set_xlabel('Good Sleep?')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('Cluster 4')
-
-
-# #### Activity Histograms for Clusters
-
-# #### Cluster: 1
-
-# In[65]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[66]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 2
-
-# In[67]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[68]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 3
-
-# In[69]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[70]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 4
-
-# In[71]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[72]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
 # #### Sub-Clustering on Activity Data
 
-# In[75]:
+# In[ ]:
 
 
 sub_clusters = activity_percentage_clusterer(TimeSeriesKMeans(num_activity_clusters, metric='dtw', max_iter=50), cluster_assignments, activity_percentages)
 
 
-# In[76]:
+# In[ ]:
 
 
 # Sanity Check for the number of points in each cluster
@@ -1284,7 +777,7 @@ for sub_cluster in sub_clusters:
 
 # ##### Cluster Purity in each subcluster
 
-# In[78]:
+# In[ ]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster
@@ -1301,7 +794,7 @@ for index, sub_cluster in enumerate(sub_clusters):
             print(f'Sub Cluster Number: {sub_cluster_assignment}, No Points assigned')
 
 
-# In[79]:
+# In[ ]:
 
 
 sleep_recipes = get_good_sleep_recipes(cluster_assignments, sub_clusters, activity_percentages, final_sleep_labels)
@@ -1314,37 +807,37 @@ sleep_recipes
 
 # #### Defining the distance function using the K-L Divergence
 
-# In[63]:
+# In[133]:
 
 
 def k_l_distance(x, y):
     return (entropy(x, y) + entropy(y, x))/ 2
 
 
-# In[54]:
+# In[81]:
 
 
 kl_dist_heart = cdist(ordered_heart_trends, ordered_heart_trends, metric=k_l_distance)
 kl_dist_calories = cdist(ordered_calories_trends, ordered_calories_trends, metric=k_l_distance)
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-sns.heatmap(kl_dist_heart, xticklabels=10, yticklabels=10, ax=ax[0])
-ax[0].set_title('All Sleep K-L Divergence Cross Matrix for Heart Trends')
-sns.heatmap(kl_dist_calories, xticklabels=10, yticklabels=10, ax=ax[1])
-ax[1].set_title('All Sleep K-L Divergence Cross Matrix for Calories Trends')
+sns.heatmap(kl_dist_heart, xticklabels=137, yticklabels=137, ax=ax[0])
+ax[0].set_title('K-L Divergence Cross Matrix for Heart Trends')
+sns.heatmap(kl_dist_calories, xticklabels=137, yticklabels=137, ax=ax[1])
+ax[1].set_title('K-L Divergence Cross Matrix for Calories Trends')
 
 
 # #### Best Model
 
-# In[64]:
+# In[36]:
 
 
-kl_best_mod = get_best_clustering_model(lambda num_clusters: KL_Kmeans(num_clusters), reduced_heart_trends, 
-                                        sil_score_distance_metric=k_l_distance)
+kl_best_mod = get_purest_clustering_model(lambda num_clusters: KL_Kmeans(num_clusters), reduced_heart_trends, 
+                                          final_sleep_labels)
 
 
 # #### Fitting the Model
 
-# In[65]:
+# In[138]:
 
 
 # Set the seed so that get the same clustering everytime
@@ -1352,14 +845,20 @@ kl_best_mod = get_best_clustering_model(lambda num_clusters: KL_Kmeans(num_clust
 # np.random.seed(1000)
 # Performing the Clustering
 # randomcentres = randomsample(reduced_heart_trends, kl_best_mod.get_num_clusters())
-randomcentres = randomsample(reduced_heart_trends, 4)
+randomcentres = randomsample(reduced_heart_trends, 6)
 centres, cluster_assignments, dist = kmeans(reduced_heart_trends, randomcentres, metric=k_l_distance, maxiter=200)
 sil_score = silhouette_score(reduced_heart_trends, cluster_assignments, metric=k_l_distance)
 print(len(centres), sil_score)
 np.unique(cluster_assignments, return_counts=True)
 
 
-# In[66]:
+# In[139]:
+
+
+get_all_clusters_sleep_purity(cluster_assignments, final_sleep_labels, measure='gini')
+
+
+# In[140]:
 
 
 # Update the number of activity clusters based on the minimum amount of records assigned to a cluster
@@ -1367,7 +866,7 @@ num_activity_clusters = min(num_activity_clusters, *(np.unique(cluster_assignmen
 print('Updated Number of activity clusters:', num_activity_clusters)
 
 
-# In[67]:
+# In[39]:
 
 
 # Visualizing the number of points in each cluster
@@ -1376,21 +875,22 @@ sns.distplot(cluster_assignments, kde=False)
 
 # #### Visualization of Clusters
 
-# In[68]:
+# In[153]:
 
 
 # Simple Cluster Visualization
 pca_mod = PCA(2)
 pca_heart = pca_mod.fit_transform(reduced_heart_trends)
 plt.figure(figsize=(7, 5))
-sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=cluster_assignments, style=cluster_assignments)
+sns.scatterplot(pca_heart[:, 0], pca_heart[:, 1], hue=cluster_assignments)#, style=cluster_assignments)
 plt.xlabel('PCA Dim 1')
 plt.ylabel('PCA Dim 2')
 plt.title('Clusters Visualized')
-plt.legend([f'Cluster: {i+1}' for i in range(4)])
+# plt.legend([f'Cluster: {i+1}' for i in range(4)])
+plt.legend([])
 
 
-# In[69]:
+# In[41]:
 
 
 # Cluster Visualization based on Sleep Efficiency
@@ -1404,7 +904,7 @@ plt.title('Clusters Visualized')
 plt.legend([])
 
 
-# In[70]:
+# In[42]:
 
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
@@ -1434,7 +934,7 @@ ax[1].legend([])
 # 
 # Finding cluster purity based on the sleep labels
 
-# In[71]:
+# In[ ]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster 
@@ -1445,291 +945,15 @@ for master_cluster_num in range(len(centres)):
     print(f'Cluster Number: {master_cluster_num}, Purity:', max(pos_sleep_label_purity, 1 - pos_sleep_label_purity))
 
 
-# In[72]:
-
-
-# Constructing a histogram plot for visualizing the sleep efficiency cluster purity in all cluster.
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==0], dtype=np.int16), ax = ax[0, 0], kde=False)
-ax[0, 0].set_xlabel('Good Sleep?')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('Cluster 1')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==1], dtype=np.int16), ax = ax[0, 1], kde=False)
-ax[0, 1].set_xlabel('Good Sleep?')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('Cluster 2')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==2], dtype=np.int16), ax = ax[1, 0], kde=False)
-ax[1, 0].set_xlabel('Good Sleep?')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('Cluster 3')
-
-sns.distplot(np.array(final_sleep_labels[cluster_assignments==3], dtype=np.int16), ax = ax[1, 1], kde=False)
-ax[1, 1].set_xlabel('Good Sleep?')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('Cluster 4')
-
-
-# #### Activity Histograms for Clusters
-
-# #### Cluster: 1
-
-# In[64]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==0), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[65]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==0) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==0) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 2
-
-# In[66]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==1), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[67]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==1) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==1) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 3
-
-# In[68]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==2), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[69]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==2) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==2) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
-# #### Cluster: 4
-
-# In[70]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3), 0], ax = ax[0, 0])
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 1], ax = ax[0, 1])
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 2], ax = ax[1, 0])
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-
-sns.distplot(activity_percentages[(cluster_assignments==3), 3], ax = ax[1, 1])
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-
-
-# In[71]:
-
-
-# Constructing a histogram plot for the different activity level percentages visualizing with respect to the good sleep label
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 0], ax = ax[0, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 0], ax = ax[0, 0], color='green', label='Good Sleep')
-ax[0, 0].set_xlabel('% Sedentary Activity')
-ax[0, 0].set_ylabel('Frequency')
-ax[0, 0].set_title('% Sedentary Activity Histogram')
-ax[0, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 1], ax = ax[0, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 1], ax = ax[0, 1], color='green', label='Good Sleep')
-ax[0, 1].set_xlabel('% Light Activity')
-ax[0, 1].set_ylabel('Frequency')
-ax[0, 1].set_title('% Light Activity Histogram')
-ax[0, 1].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 2], ax = ax[1, 0], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 2], ax = ax[1, 0], color='green', label='Good Sleep')
-ax[1, 0].set_xlabel('% Moderate Activity')
-ax[1, 0].set_ylabel('Frequency')
-ax[1, 0].set_title('% Moderate Activity Histogram')
-ax[1, 0].legend()
-
-sns.distplot(activity_percentages[(cluster_assignments==3) & (~final_sleep_labels), 3], ax = ax[1, 1], color='red', label='Poor Sleep')
-sns.distplot(activity_percentages[(cluster_assignments==3) & (final_sleep_labels), 3], ax = ax[1, 1], color='green', label='Good Sleep')
-ax[1, 1].set_xlabel('% Vigorous Activity')
-ax[1, 1].set_ylabel('Frequency')
-ax[1, 1].set_title('% Vigorous Activity Histogram')
-ax[1, 1].legend()
-
-
 # #### Sub-Clustering on Activity Data
 
-# In[81]:
+# In[144]:
 
 
-sub_clusters = activity_percentage_clusterer(KL_Kmeans(num_clusters=8), cluster_assignments, activity_percentages)
+sub_clusters = activity_percentage_clusterer(KL_Kmeans(num_clusters=12), cluster_assignments, activity_percentages)
 
 
-# In[82]:
+# In[145]:
 
 
 # Sanity Check for the number of points in each cluster
@@ -1740,7 +964,7 @@ for sub_cluster in sub_clusters:
 
 # ##### Cluster Purity in each subcluster
 
-# In[83]:
+# In[49]:
 
 
 # Clustering Purity is defined by ratio of dominant class of sleep label instance in the cluster
@@ -1758,23 +982,19 @@ for index, sub_cluster in enumerate(sub_clusters):
             print(f'Sub Cluster Number: {sub_cluster_assignment}, No Points assigned')
 
 
-# In[84]:
+# In[146]:
 
 
 sleep_recipes = get_good_sleep_recipes(cluster_assignments, sub_clusters, activity_percentages, final_sleep_labels, good_sleep_ratio=1.)
 sleep_recipes
 
 
-# In[85]:
+# In[149]:
 
 
 for i, sleep_recipe in enumerate(sleep_recipes):
     plt.figure(i)
-    plt.bar(['S', 'L', 'M', 'V'], (sleep_recipe / 1440 * 100))
-
-
-# In[ ]:
-
-
-
+    plt.bar(['Sedentary', 'Light', 'Moderate', 'Vigorous'], (sleep_recipe * 720 / 100))
+    plt.ylabel('Minutes')
+    plt.title('Activity Recipes for Sleep')
 

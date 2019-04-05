@@ -7,7 +7,7 @@
 
 # ## Importing Required Libraries
 
-# In[46]:
+# In[1]:
 
 
 # Importing scientific libarires required for analysis and handling data
@@ -41,10 +41,10 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 
 # ##### Define the paths to the directories that contain the pickle files with the corresponding data
 
-# In[73]:
+# In[29]:
 
 
-user_name = 'Saksham'
+user_name = 'Abhiraj'
 heart_rate_data_directory_path = f'../data/data_files/{user_name}/heart/'
 heart_rate_ts_data = []
 calories_data_directory_path = f'../data/data_files/{user_name}/calories/'
@@ -64,7 +64,7 @@ len(common_file_nms)
 
 # ##### Load the data from the pickle files into a list
 
-# In[74]:
+# In[30]:
 
 
 counter = 0
@@ -98,7 +98,7 @@ for file_name in sorted(list(common_file_nms)):
 
 # ##### Convert the lists into the correct format: array and dataframe
 
-# In[75]:
+# In[31]:
 
 
 heart_rate_ts_data = np.array(heart_rate_ts_data)
@@ -106,14 +106,14 @@ calories_ts_data, activity_label_ts_data = np.array(calories_ts_data), np.array(
 sleep_efficiency_ratio, sleep_stages_summary = np.array(sleep_efficiency_ratio), pd.DataFrame(list(sleep_stages_summary))
 
 
-# In[76]:
+# In[32]:
 
 
 # Check for the shape of all the arrays and dataframes
 heart_rate_ts_data.shape, calories_ts_data.shape, activity_label_ts_data.shape, sleep_efficiency_ratio.shape, sleep_stages_summary.shape
 
 
-# In[77]:
+# In[33]:
 
 
 # Saving the sleep ratio and sleep stages
@@ -121,14 +121,14 @@ np.save(construct_path(user_numpy_array_output_directory, f'sleep_efficiency_rat
 sleep_stages_summary.to_csv(construct_path(user_numpy_array_output_directory, f'sleep_stages_summary.csv'), index=False)
 
 
-# In[78]:
+# In[34]:
 
 
 # Make sure activity value does not have a nan field (not sure how we would fill this)
 np.isnan(activity_label_ts_data).any()
 
 
-# In[79]:
+# In[35]:
 
 
 # Saving the activity_value_ts array
@@ -139,14 +139,14 @@ np.save(construct_path(user_numpy_array_output_directory, f'activity_label_ts_da
 # 
 # In this section of the notebook we aggregate the activity labels of a person from minute level to percentage level
 
-# In[82]:
+# In[36]:
 
 
-activity_percentages = activity_percentage_finder(activity_label_ts_data[:, list(range(120)) + list(range(600, 24*60))], hours=16)
+activity_percentages = activity_percentage_finder(activity_label_ts_data[:, 600:-120], hours=12)
 activity_percentages.shape
 
 
-# In[83]:
+# In[37]:
 
 
 # Saving the activity percentages array
@@ -155,7 +155,7 @@ np.save(construct_path(user_numpy_array_output_directory, f'activity_percentages
 
 # ## Normalizing the Time Series Data
 
-# In[84]:
+# In[38]:
 
 
 # Remove nans from heart and calories data
@@ -163,14 +163,14 @@ heart_rate_ts_data = remove_nans_from_array(heart_rate_ts_data)
 calories_ts_data = remove_nans_from_array(calories_ts_data)
 
 
-# In[85]:
+# In[39]:
 
 
 # Check that no nans in any of the data
 np.isnan(heart_rate_ts_data).any(), np.isnan(calories_ts_data).any()
 
 
-# In[86]:
+# In[40]:
 
 
 # Saving the Calories and Heart Rate data
@@ -178,7 +178,7 @@ np.save(construct_path(user_numpy_array_output_directory, f'heart_rate_ts_data.n
 np.save(construct_path(user_numpy_array_output_directory, f'calories_ts_data.npy'), calories_ts_data)
 
 
-# In[87]:
+# In[41]:
 
 
 # Saving the Calories and Heart Rate data

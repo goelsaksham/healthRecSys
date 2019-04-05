@@ -125,3 +125,24 @@ def get_time_series_window_mean_std(time_series_array, hours=24, mins=60):
 def normalize_time_series_array(time_series_array, hours=24, mins=60):
 	m, s = get_time_series_window_mean_std(time_series_array, hours, mins)
 	return (time_series_array - m) / s
+
+
+def get_cluster_sleep_purity(sleep_labels, measure='gini'):
+	pos_sleep_prob = np.sum(sleep_labels)/sleep_labels.shape[0]
+	neg_sleep_prob = np.sum(~sleep_labels) / sleep_labels.shape[0]
+	if measure.lower() == 'gini':
+		return pos_sleep_prob**2 + neg_sleep_prob**2
+	elif measure.lower() == 'entropy':
+		return 1 - (- pos_sleep_prob * np.log2(pos_sleep_prob) if pos_sleep_prob != 0 else 0) - \
+		       (- neg_sleep_prob * np.log2(neg_sleep_prob) if neg_sleep_prob != 0 else 0)
+	else:
+		return pos_sleep_prob
+
+
+def get_all_clusters_sleep_purity(cluster_labels, sleep_labels, measure='gini'):
+	total_purity = 0
+	for cluster_num in np.unique(cluster_labels):
+		cluster_sleep_assignments = sleep_labels[cluster_labels == cluster_num]
+		measure_val = get_cluster_sleep_purity(cluster_sleep_assignments, measure)
+		total_purity += measure_val * cluster_sleep_assignments.shape[0] / sleep_labels.shape[0]
+	return total_purity

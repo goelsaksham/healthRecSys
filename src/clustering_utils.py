@@ -5,6 +5,36 @@ corresponding results.
 import numpy as np
 import random
 from sklearn.metrics import silhouette_score
+from utils.general_utils import get_all_clusters_sleep_purity
+
+
+def get_pure_num_clusters(orig_data, cluster_getter_func, number_of_cluster_range, sleep_labels,
+                          measure='gini'):
+
+	max_purity = -1
+	best_num_clusters = 1
+	for num_clusters in number_of_cluster_range:
+		clusterer = cluster_getter_func(num_clusters)
+		cluster_labels = clusterer.fit_predict(orig_data)
+		purity_val = get_all_clusters_sleep_purity(cluster_labels, sleep_labels, measure=measure)
+		if purity_val > max_purity:
+			max_purity = purity_val
+			best_num_clusters = num_clusters
+	return best_num_clusters, max_purity
+
+
+def get_purest_clustering_model(cluster_model_getter, data, sleep_labels,
+                                cluster_range=range(2, 9),
+                                purity_measure='gini'):
+	best_number_clusters, max_purity = \
+		get_pure_num_clusters(data, cluster_model_getter, cluster_range, sleep_labels,
+		                      purity_measure)
+	if best_number_clusters == list(cluster_range)[-1]:
+		best_number_clusters, max_purity = \
+			get_pure_num_clusters(data, cluster_model_getter,
+			                      range(list(cluster_range)[-0], list(cluster_range)[-1] + 20),
+			                      sleep_labels, purity_measure)
+	return cluster_model_getter(best_number_clusters)
 
 
 def get_best_num_clusters(orig_data, cluster_getter_func, number_of_cluster_range,
