@@ -11,21 +11,12 @@ def main():
 
 	user_id = get_fitbit_user_id(get_user_information(server))
 	date_str = '2019-02-14'
-	# print(get_sleep_data_for_dump(auth_client, user_id, '2018-11-10'))
-	# print(get_all_sleeps_summary(get_sleep_data(auth_client, '2018-11-15'), user_id))
-	# print(get_calories_data(auth_client, '2018-11-10'))
-	# print(get_calories_intraday(get_calories_data(auth_client, '2018-11-10'), user_id))
-	# print(get_heart_data(auth_client, '2018-11-10'))
-	# print(get_heart_summary(get_heart_data(auth_client, '2018-11-10'), user_id))
-	# print(get_heart_intraday(get_heart_data(auth_client, '2019-02-27'), user_id))
-	# print(get_heart_data(auth_client, '2018-02-27'))
 	heart_data = get_heart_intraday(get_heart_data(auth_client, date_str), user_id)
 	# print(heart_data)
 	calories_data = get_calories_intraday(get_calories_data(auth_client, date_str), user_id)
 	# print(calories_data)
 	steps_data = get_steps_intraday(get_steps_data(auth_client, date_str), user_id)
 	# print(steps_data)
-
 
 	heart_beat_vals = np.array([minute_heart['value'] for minute_heart in heart_data])
 	heart_beat_vals = heart_beat_vals - np.mean(heart_beat_vals)

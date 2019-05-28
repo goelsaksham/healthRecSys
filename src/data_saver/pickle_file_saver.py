@@ -77,7 +77,7 @@ def date_iterator(user_id, auth_client, user_directory, start_date, end_date, da
 	return current_date
 
 
-def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path=f'../../data/data_files/Abhiraj'):
+def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path=f'../../data/data_files/Prof'):
 	USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
@@ -87,7 +87,7 @@ def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path
 		# Adding this loop along with the try except block to
 		try:
 			last_date = date_iterator(user_id, auth_client, data_dump_directory_path,
-			              datetime.today() - timedelta(days=25), datetime.today())
+			              datetime.today() - timedelta(days=100), datetime.today())
 			break_loop = (last_date - datetime.today()).days >= -1
 		except:
 			# sleeping
@@ -100,7 +100,7 @@ def save_user_data_in_pickle_files(user_name='Saksham', data_dump_directory_path
 
 
 def main():
-	save_user_data_in_pickle_files(user_name='Abhiraj')
+	save_user_data_in_pickle_files(user_name='Prof')
 
 
 if __name__ == '__main__':

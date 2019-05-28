@@ -98,20 +98,19 @@ def remove_nans_from_array(all_dates_numpy_array, hours=24, mins=60):
 	return temp.reshape(-1, hours * mins)
 
 
-def reduce_time_series_dimension(time_series_array, time_window_length):
-	NUM_MINUTES = 24 * 60
+def reduce_time_series_dimension(time_series_array, time_window_length, hours=24, mins=60):
+	NUM_MINUTES = hours * mins
 	return np.nanmean(time_series_array.reshape(-1, NUM_MINUTES // time_window_length, time_window_length), axis=2)
 
 
-def activity_percentage_finder(activity_label_time_series_data):
-	ratio_frac = 100 / (24 * 60)
+def activity_percentage_finder(activity_label_time_series_data, hours=24, mins=60):
+	ratio_frac = 100 / (hours * mins)
 	level_0_activity = np.sum(activity_label_time_series_data[:, :] == 0, axis=1) * ratio_frac
 	level_1_activity = np.sum(activity_label_time_series_data[:, :] == 1, axis=1) * ratio_frac
 	level_2_activity = np.sum(activity_label_time_series_data[:, :] == 2, axis=1) * ratio_frac
 	level_3_activity = np.sum(activity_label_time_series_data[:, :] == 3, axis=1) * ratio_frac
-	return np.round(np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
-	                         dtype=np.float16).T,
-	                decimals=2)
+	return np.array([level_0_activity, level_1_activity, level_2_activity, level_3_activity],
+	                dtype=np.float16).T
 
 
 def get_time_series_window_mean_std(time_series_array, hours=24, mins=60):
@@ -126,3 +125,24 @@ def get_time_series_window_mean_std(time_series_array, hours=24, mins=60):
 def normalize_time_series_array(time_series_array, hours=24, mins=60):
 	m, s = get_time_series_window_mean_std(time_series_array, hours, mins)
 	return (time_series_array - m) / s
+
+
+def get_cluster_sleep_purity(sleep_labels, measure='gini'):
+	pos_sleep_prob = np.sum(sleep_labels)/sleep_labels.shape[0]
+	neg_sleep_prob = np.sum(~sleep_labels) / sleep_labels.shape[0]
+	if measure.lower() == 'gini':
+		return pos_sleep_prob**2 + neg_sleep_prob**2
+	elif measure.lower() == 'entropy':
+		return 1 - (- pos_sleep_prob * np.log2(pos_sleep_prob) if pos_sleep_prob != 0 else 0) - \
+		       (- neg_sleep_prob * np.log2(neg_sleep_prob) if neg_sleep_prob != 0 else 0)
+	else:
+		return pos_sleep_prob
+
+
+def get_all_clusters_sleep_purity(cluster_labels, sleep_labels, measure='gini'):
+	total_purity = 0
+	for cluster_num in np.unique(cluster_labels):
+		cluster_sleep_assignments = sleep_labels[cluster_labels == cluster_num]
+		measure_val = get_cluster_sleep_purity(cluster_sleep_assignments, measure)
+		total_purity += measure_val * cluster_sleep_assignments.shape[0] / sleep_labels.shape[0]
+	return total_purity
