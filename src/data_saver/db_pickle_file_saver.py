@@ -172,7 +172,7 @@ def date_iterator(user_id, auth_client, user_directory, start_date, end_date, da
 
 
 def save_user_data_in_pickle_files(user_name='Meghna', data_dump_directory_path=f'../../data/data_files/Meghna'):
-	USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
+	USER_ID, CLIENT_SECRET, server = instantiate_server(user_name)
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 	user_id = get_fitbit_user_id(get_user_information(server))
@@ -193,7 +193,7 @@ def save_user_data_in_pickle_files(user_name='Meghna', data_dump_directory_path=
 			# sleeping
 			print('Sleeping so that no too many requests!')
 			time.sleep(1800)
-			USER_ID, CLIENT_SECRET, server = instantiate_user(user_name)
+			USER_ID, CLIENT_SECRET, server = instantiate_server(user_name)
 			ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 			auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 			user_id = get_fitbit_user_id(get_user_information(server))

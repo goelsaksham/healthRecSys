@@ -41,7 +41,7 @@ def get_time_asleep_to_time_in_bed_ratio(sleep_data, user_id):
 
 
 def main():
-	USER_ID, CLIENT_SECRET, server = instantiate_user('Saksham')
+	USER_ID, CLIENT_SECRET, server = instantiate_server('Saksham')
 	ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
 	auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 	user_id = get_fitbit_user_id(get_user_information(server))

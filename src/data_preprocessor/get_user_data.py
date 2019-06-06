@@ -4,8 +4,8 @@ from application_secrets.fitbit_application_secrets import *
 import time
 
 
-def instantiate_user(user_name='Saksham'):
-    CLIENT_ID, CLIENT_SECRET = get_fitbit_client_id(user_name), get_fitbit_client_secret(user_name)
+def instantiate_server():
+    CLIENT_ID, CLIENT_SECRET = get_fitbit_client_id(), get_fitbit_client_secret()
     server = Oauth2.OAuth2Server(CLIENT_ID, CLIENT_SECRET)
     server.browser_authorize()
     return CLIENT_ID, CLIENT_SECRET, server
@@ -17,6 +17,10 @@ def get_access_token(server):
 
 def get_refresh_token(server):
     return server.fitbit.client.session.token['refresh_token']
+
+
+def get_expires_at(server):
+    return server.fitbit.client.session.token['expires_at']
 
 
 def get_user_information(server):
@@ -261,7 +265,7 @@ def get_heart_intraday(heart_data, user_id):
 
 
 def main():
-    CLIENT_ID, CLIENT_SECRET, server = instantiate_user('Saksham')
+    CLIENT_ID, CLIENT_SECRET, server = instantiate_server('Saksham')
     ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
     auth_client = get_auth_client(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 
