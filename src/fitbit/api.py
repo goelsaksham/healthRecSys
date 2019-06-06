@@ -56,7 +56,6 @@ class FitbitOauth2Client(object):
             token=token,
             redirect_uri=redirect_uri,
         ))
-        print(f'\n\n\n\n\n HERE IS THE CLIENT ID: {self.client_id}\n\n\n\n\n\n')
         self.timeout = kwargs.get("timeout", None)
 
     def _request(self, method, url, **kwargs):
