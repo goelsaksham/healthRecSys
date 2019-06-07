@@ -68,4 +68,4 @@ if __name__ == '__main__':
 	# 	time.sleep(1)
 	sync_file_obj = CSVLastSync('../../data/sync_times/sync_times.csv')
 	token_obj = UserTokenGenerator(f'../../data/user_tokens/tokens.csv')
-	collect_user_data('Saksham', sync_file_obj, token_obj)
+	collect_user_data('Abhiraj', sync_file_obj, token_obj)
