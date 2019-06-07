@@ -9,18 +9,11 @@ from token_reader import UserTokenGenerator
 
 
 def collect_user_data(user_name, sync_file_obj, token_obj: UserTokenGenerator, date_format='%Y-%m-%d'):
-	try:
-		ACCESS_TOKEN, REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET = token_obj.get_tokens_using_user_names(user_name)
-		user_id = get_user_ids(user_name)
-		auth_client = get_auth_client(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
-		print('User Id:', user_id, 'User Name:', user_name, 'Access Token:', ACCESS_TOKEN,
-		      'Refresh Token:', REFRESH_TOKEN, 'CLIENT ID:', CLIENT_ID, 'CLIENT SECRET:', CLIENT_SECRET)
-	except ValueError:
-		print('Invalid User Name, User credentials not found!')
-		# CLIENT_ID, CLIENT_SECRET, server = instantiate_user(user_name)
-		# ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
-		# user_id = get_fitbit_user_id(get_user_information(server))
-		return
+	user_id, ACCESS_TOKEN, REFRESH_TOKEN = token_obj.get_tokens_using_user_names(user_name)
+	auth_client = get_auth_client(get_fitbit_client_id(), get_fitbit_client_secret(), ACCESS_TOKEN, REFRESH_TOKEN)
+	print('User Id:', user_id, 'User Name:', user_name, 'Access Token:', ACCESS_TOKEN, 'Refresh Token:',
+	      REFRESH_TOKEN)
+	print(get_heart_intraday(get_heart_data(auth_client, '2019-02-27'), user_id))
 
 	# TODO: Change functionality
 	# date_last_sync_str = sync_file_obj.get_user_last_sync_time(user_id)
@@ -65,11 +58,14 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
-	schedule.every(100).minutes.do(main)
-	# Uncomment this for testing the correction of script
-	# schedule.every().day.at("23:30").do(main)
-
-	while True:
-		schedule.run_pending()
-		time.sleep(1)
+	# main()
+	# schedule.every(100).minutes.do(main)
+	# # Uncomment this for testing the correction of script
+	# # schedule.every().day.at("23:30").do(main)
+	#
+	# while True:
+	# 	schedule.run_pending()
+	# 	time.sleep(1)
+	sync_file_obj = CSVLastSync('../../data/sync_times/sync_times.csv')
+	token_obj = UserTokenGenerator(f'../../data/user_tokens/tokens.csv')
+	collect_user_data('Saksham', sync_file_obj, token_obj)
