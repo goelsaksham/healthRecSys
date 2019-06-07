@@ -17,3 +17,7 @@ all_users_info = {
 		'user_id': '6WQRF5',
 		}
 	}
+
+
+def get_user_ids(user_name):
+	return all_users_info[user_name]['user_id']

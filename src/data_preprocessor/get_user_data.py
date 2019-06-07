@@ -4,12 +4,11 @@ from application_secrets.fitbit_application_secrets import *
 import time
 
 
-def instantiate_user(user_name = 'Saksham'):
-    USER_ID, CLIENT_SECRET = get_fitbit_client_id(user_name), get_fitbit_client_secret(user_name)
-    print(USER_ID, CLIENT_SECRET)
-    server = Oauth2.OAuth2Server(USER_ID, CLIENT_SECRET)
+def instantiate_user(user_name='Saksham'):
+    CLIENT_ID, CLIENT_SECRET = get_fitbit_client_id(user_name), get_fitbit_client_secret(user_name)
+    server = Oauth2.OAuth2Server(CLIENT_ID, CLIENT_SECRET)
     server.browser_authorize()
-    return USER_ID, CLIENT_SECRET, server
+    return CLIENT_ID, CLIENT_SECRET, server
 
 
 def get_access_token(server):
@@ -262,9 +261,9 @@ def get_heart_intraday(heart_data, user_id):
 
 
 def main():
-    USER_ID, CLIENT_SECRET, server = instantiate_user('Saksham')
+    CLIENT_ID, CLIENT_SECRET, server = instantiate_user('Saksham')
     ACCESS_TOKEN, REFRESH_TOKEN = get_access_token(server), get_refresh_token(server)
-    auth_client = get_auth_client(USER_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
+    auth_client = get_auth_client(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN, REFRESH_TOKEN)
 
     user_id = get_fitbit_user_id(get_user_information(server))
     #print(get_sleep_data_for_dump(auth_client, user_id, '2018-11-10'))

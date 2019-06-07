@@ -17,8 +17,8 @@ CONNECTION_CONFIG = {
 }
 
 # connecting to postgres database
-DATABASE_CONNECTION = psycopg2.connect(host=CONNECTION_CONFIG["hostname"], user=CONNECTION_CONFIG["username"], password=CONNECTION_CONFIG["password"],
-                                       dbname=CONNECTION_CONFIG["database"])
+# DATABASE_CONNECTION = psycopg2.connect(host=CONNECTION_CONFIG["hostname"], user=CONNECTION_CONFIG["username"], password=CONNECTION_CONFIG["password"],
+#                                        dbname=CONNECTION_CONFIG["database"])
 
 
 class LastSync:
